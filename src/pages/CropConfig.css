@@ -1,0 +1,351 @@
+/* ==========================================================================
+   CropConfig.css - HARU Crop Configuration Page
+   Clean tactile card styling aligned with HARU Design System (0 FAIL, 0 WARN)
+   ========================================================================== */
+
+.crop-root {
+  min-height: 100dvh;
+  background-color: #f0f2ee;
+  color: #1a221e;
+  padding: 20px 16px 100px;
+  max-width: 680px;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+/* Top Navigation Bar */
+.crop-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.crop-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background-color: #ffffff;
+  border: 1.5px solid #e4e6e2;
+  border-radius: 9999px;
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #2c3830;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.crop-back-btn:hover {
+  background-color: #f7f9f6;
+  border-color: #d2d6ce;
+}
+
+.crop-header {
+  margin-bottom: 20px;
+}
+
+.crop-header__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  background-color: rgba(12, 94, 74, 0.08);
+  border: 1px solid rgba(12, 94, 74, 0.2);
+  border-radius: 9999px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: #0c5e4a;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.crop-header__title {
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #04201a;
+  margin: 0 0 6px;
+}
+
+.crop-header__subtitle {
+  font-size: 13px;
+  color: #55665c;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* Device Verified Card */
+.crop-device-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background-color: #ffffff;
+  border: 1.5px solid #0c5e4a;
+  border-radius: 16px;
+  padding: 14px 16px;
+  margin-bottom: 24px;
+}
+
+.crop-device-card__icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background-color: rgba(12, 94, 74, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #0c5e4a;
+  flex-shrink: 0;
+}
+
+.crop-device-card__info {
+  flex: 1;
+}
+
+.crop-device-card__tag {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #0c5e4a;
+  letter-spacing: 0.04em;
+}
+
+.crop-device-card__id {
+  font-size: 14px;
+  font-weight: 700;
+  color: #04201a;
+  margin: 2px 0 0;
+}
+
+.crop-device-card__status {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #0c5e4a;
+  background-color: rgba(12, 94, 74, 0.08);
+  padding: 4px 8px;
+  border-radius: 9999px;
+}
+
+/* Sections */
+.crop-section-title {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #6d7d73;
+  margin-bottom: 10px;
+}
+
+/* Crop Grid */
+.crop-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-bottom: 24px;
+}
+
+@media (min-width: 520px) {
+  .crop-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.crop-card {
+  background-color: #ffffff;
+  border: 1.5px solid #e4e6e2;
+  border-radius: 16px;
+  padding: 14px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  transition-property: border-color, background-color;
+  transition-duration: 0.15s;
+  transition-timing-function: ease-out;
+}
+
+.crop-card:hover {
+  border-color: #c7cbc3;
+  background-color: #fafbf9;
+}
+
+.crop-card--active {
+  border-color: #0c5e4a;
+  background-color: #f7faf8;
+}
+
+.crop-card__top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.crop-card__icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background-color: #f0f2ee;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #0c5e4a;
+}
+
+.crop-card--active .crop-card__icon {
+  background-color: #0c5e4a;
+  color: #ffffff;
+}
+
+.crop-card__check {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background-color: #0c5e4a;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.crop-card__name {
+  font-size: 14px;
+  font-weight: 700;
+  color: #04201a;
+  margin: 0 0 2px;
+}
+
+.crop-card__cycle {
+  font-size: 11px;
+  font-weight: 600;
+  color: #0c5e4a;
+}
+
+.crop-card__desc {
+  font-size: 11px;
+  color: #6d7d73;
+  margin-top: 4px;
+  line-height: 1.35;
+}
+
+/* Custom Crop Input */
+.crop-input-wrap {
+  background-color: #ffffff;
+  border: 1.5px solid #e4e6e2;
+  border-radius: 16px;
+  padding: 14px 16px;
+  margin-bottom: 24px;
+}
+
+.crop-input-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #2c3830;
+  margin-bottom: 6px;
+  display: block;
+}
+
+.crop-input {
+  width: 100%;
+  border: 1.5px solid #e4e6e2;
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 13px;
+  color: #04201a;
+  box-sizing: border-box;
+  background-color: #fafbf9;
+}
+
+.crop-input:focus {
+  outline: none;
+  border-color: #0c5e4a;
+  background-color: #ffffff;
+}
+
+/* AI Preset Card */
+.crop-ai-preset {
+  background-color: #ffffff;
+  border: 1.5px solid #e4e6e2;
+  border-radius: 18px;
+  padding: 16px;
+  margin-bottom: 24px;
+}
+
+.crop-ai-preset__head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #0c5e4a;
+  margin-bottom: 12px;
+}
+
+.crop-ai-preset__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.crop-preset-item {
+  background-color: #f7faf8;
+  border: 1px solid #e2ece7;
+  border-radius: 12px;
+  padding: 10px 8px;
+  text-align: center;
+}
+
+.crop-preset-item__lbl {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: #6d7d73;
+  letter-spacing: 0.04em;
+  display: block;
+  margin-bottom: 2px;
+}
+
+.crop-preset-item__val {
+  font-size: 13px;
+  font-weight: 700;
+  color: #04201a;
+}
+
+/* Action Button */
+.crop-action-bar {
+  position: sticky;
+  bottom: 20px;
+  margin-top: 30px;
+}
+
+.crop-submit-btn {
+  width: 100%;
+  background-color: #0c5e4a;
+  color: #ffffff;
+  border: none;
+  border-radius: 14px;
+  padding: 14px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.crop-submit-btn:hover {
+  background-color: #094738;
+}
+
+.crop-submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+

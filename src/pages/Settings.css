@@ -1,0 +1,776 @@
+/* ==========================================================================
+   Settings.css
+   HARU MANIK Settings Page - Adapted to Dashboard Theme:
+   - Sage #f0f2ee Page Background
+   - Clean Header Title
+   - Apple ID Profile Card styled in Dashboard Card aesthetic
+   - Tactile Card Containers (border: 1.5px solid #e4e6e2; radius: 20px)
+   - Brand Tinted Icon Boxes & Clean Typography
+   ========================================================================== */
+
+.set-page {
+  min-height: 100dvh;
+  background-color: #f0f2ee;
+  font-family: var(--font-body, 'Inter', -apple-system, sans-serif);
+  padding-bottom: 110px;
+}
+
+.set-container {
+  max-width: 580px;
+  margin: 0 auto;
+  padding: calc(24px + env(safe-area-inset-top)) 16px 24px;
+}
+
+/* --------------------------------------------------------------------------
+   HEADER
+   -------------------------------------------------------------------------- */
+.set-header {
+  margin-bottom: 20px;
+}
+
+.set-title {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -0.025em;
+  line-height: 1.2;
+}
+
+/* --------------------------------------------------------------------------
+   PROFILE CARD (Styled like Dashboard Field Selector / Sensor Card)
+   -------------------------------------------------------------------------- */
+.set-profile-card {
+  background: #ffffff;
+  border: 1.5px solid #e4e6e2;
+  border-radius: 20px;
+  padding: 14px 16px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.set-profile-card:hover {
+  border-color: #0c5e4a;
+  background: #fbfdfc;
+}
+
+.set-row--disabled {
+  opacity: 0.55;
+}
+
+.set-profile-card__avatar-wrap {
+  position: relative;
+  width: 52px;
+  height: 52px;
+  flex-shrink: 0;
+}
+
+.set-profile-card__avatar {
+  width: 100%;
+  height: 100%;
+  border-radius: 16px;
+  object-fit: cover;
+  background: #f1f5f9;
+  border: 1.5px solid #e2e8f0;
+}
+
+.set-profile-card__badge {
+  position: absolute;
+  bottom: -2px;
+  right: -2px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #0c5e4a;
+  border: 2px solid #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.set-profile-card__info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.set-profile-card__name-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.set-profile-card__name {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: #0f172a;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.set-tier-chip {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 99px;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.set-tier-chip--pro {
+  background: #0c5e4a;
+  color: #ffffff;
+}
+
+.set-tier-chip--free {
+  background: #f1f5f9;
+  color: #64748b;
+  border: 1px solid #e2e8f0;
+}
+
+.set-profile-card__subtitle {
+  margin: 0;
+  font-size: 11px;
+  color: #64748b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.set-chevron {
+  color: #cbd5e1;
+  flex-shrink: 0;
+  transition: transform 0.15s ease, color 0.15s ease;
+}
+
+.set-profile-card:hover .set-chevron,
+.set-row:hover .set-chevron {
+  color: #0c5e4a;
+  transform: translateX(2px);
+}
+
+/* --------------------------------------------------------------------------
+   SETTING GROUPS & ROWS
+   -------------------------------------------------------------------------- */
+.set-group-wrap {
+  margin-bottom: 20px;
+}
+
+.set-section-badge {
+  font-size: 11px;
+  font-weight: 700;
+  color: #0c5e4a;
+  letter-spacing: 0.04em;
+}
+
+.set-card-group {
+  background: #ffffff;
+  border: 1.5px solid #e4e6e2;
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.set-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 13px 16px;
+  border-bottom: 1px solid #f1f5f9;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.set-row:hover {
+  background: #f8fafc;
+}
+
+.set-row:last-child {
+  border-bottom: none;
+}
+
+/* Tinted Icon Boxes matching Brand Colors */
+.set-row__icon-box {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.set-row__icon-box--amber {
+  background: rgba(217, 119, 6, 0.12);
+  color: #d97706;
+}
+
+.set-row__icon-box--brand {
+  background: rgba(12, 94, 74, 0.12);
+  color: #0c5e4a;
+}
+
+.set-row__icon-box--emerald {
+  background: rgba(5, 150, 105, 0.12);
+  color: #059669;
+}
+
+.set-row__icon-box--cyan {
+  background: rgba(2, 132, 199, 0.12);
+  color: #0284c7;
+}
+
+.set-row__icon-box--rose {
+  background: rgba(225, 29, 72, 0.12);
+  color: #e11d48;
+}
+
+.set-row__icon-box--teal {
+  background: rgba(13, 148, 136, 0.12);
+  color: #0d9488;
+}
+
+.set-row__icon-box--red {
+  background: rgba(220, 38, 38, 0.12);
+  color: #dc2626;
+}
+
+.set-row__content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.set-row__label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.set-row__value {
+  font-size: 11px;
+  color: #64748b;
+  font-weight: 500;
+}
+
+/* Native Select */
+.set-native-select {
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #1e293b;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 99px;
+  cursor: pointer;
+  outline: none;
+  font-family: inherit;
+  transition: border-color 0.15s ease;
+}
+
+.set-native-select:focus {
+  border-color: #0c5e4a;
+}
+
+/* Custom Switch */
+.set-switch {
+  position: relative;
+  display: inline-block;
+  width: 44px;
+  height: 25px;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.set-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.set-switch-slider {
+  position: absolute;
+  inset: 0;
+  background-color: #cbd5e1;
+  border-radius: 99px;
+  transition: background-color 0.2s ease;
+}
+
+.set-switch-slider::before {
+  position: absolute;
+  content: "";
+  height: 19px;
+  width: 19px;
+  left: 3px;
+  bottom: 3px;
+  background-color: #ffffff;
+  border-radius: 50%;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.set-switch input:checked + .set-switch-slider {
+  background-color: #0c5e4a;
+}
+
+.set-switch input:checked + .set-switch-slider::before {
+  transform: translateX(19px);
+}
+
+/* Logout Button */
+.set-card-group--logout {
+  margin-top: 10px;
+  margin-bottom: 24px;
+  border-color: #fecaca;
+}
+
+.set-logout-btn {
+  width: 100%;
+  padding: 13px 16px;
+  background: #ffffff;
+  border: none;
+  color: #dc2626;
+  font-size: 13px;
+  font-weight: 650;
+  cursor: pointer;
+  text-align: center;
+  transition: background 0.15s ease;
+  font-family: inherit;
+}
+
+.set-logout-btn:hover {
+  background: #fef2f2;
+}
+
+/* --------------------------------------------------------------------------
+   MODAL SHEETS & DIALOGS
+   -------------------------------------------------------------------------- */
+.ios-sheet-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background-color: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  overflow: hidden;
+  animation: setFadeIn 0.2s ease;
+}
+
+.ios-sheet-modal {
+  width: 100%;
+  max-width: var(--max-width, 430px);
+  max-height: calc(100dvh - 32px);
+  background-color: #f0f2ee;
+  border-radius: 24px;
+  border: 1.5px solid #e4e6e2;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  animation: setPopCenter 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes setFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes setPopCenter {
+  from {
+    transform: scale(0.96) translateY(12px);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+}
+
+.ios-sheet-navbar {
+  padding: 16px 18px 14px;
+  border-bottom: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  background-color: #ffffff;
+  z-index: 10;
+  flex-shrink: 0;
+  border-top-left-radius: 22px;
+  border-top-right-radius: 22px;
+}
+
+.ios-sheet-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+  text-align: center;
+  letter-spacing: -0.015em;
+}
+
+.ios-sheet-navbtn {
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #64748b;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: color 0.15s ease, background 0.15s ease;
+  font-family: inherit;
+}
+
+.ios-sheet-navbtn:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+.ios-sheet-navbtn--primary {
+  color: #0c5e4a;
+  font-weight: 700;
+}
+
+.ios-sheet-navbtn--primary:hover {
+  background: #ecfdf5;
+  color: #094738;
+}
+
+.ios-sheet-body {
+  flex: 1;
+  width: 100%;
+  max-width: 580px;
+  margin: 0 auto;
+  box-sizing: border-box;
+  padding: 24px 16px calc(60px + env(safe-area-inset-bottom));
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.ios-sheet-avatar-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 8px 0 16px;
+}
+
+.ios-sheet-avatar-frame {
+  position: relative;
+  width: 72px;
+  height: 72px;
+  margin-bottom: 10px;
+}
+
+.ios-sheet-avatar-frame img {
+  width: 100%;
+  height: 100%;
+  border-radius: 20px;
+  object-fit: cover;
+  border: 2px solid #e2e8f0;
+}
+
+.ios-sheet-avatar-cam {
+  position: absolute;
+  bottom: -4px;
+  right: -4px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #0c5e4a;
+  border: 2px solid #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.ios-sheet-name {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.ios-sheet-email {
+  margin: 4px 0 0;
+  font-size: 12px;
+  color: #64748b;
+}
+
+.ios-avatar-presets {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.ios-preset-dot {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  padding: 0;
+  background: transparent;
+  cursor: pointer;
+  overflow: hidden;
+  transition: border-color 0.15s ease;
+}
+
+.ios-preset-dot img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.ios-preset-dot--active {
+  border-color: #0c5e4a;
+}
+
+/* Modal Group Rows */
+.ios-group-title {
+  font-size: 10px;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0 4px 6px;
+  margin-top: 10px;
+}
+
+.ios-inset-group {
+  background: #ffffff;
+  border: 1.5px solid #e4e6e2;
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.ios-row {
+  display: flex;
+  align-items: center;
+  padding: 12px 14px;
+  border-bottom: 1px solid #f1f5f9;
+  font-size: 13px;
+}
+
+.ios-row:last-child {
+  border-bottom: none;
+}
+
+.ios-row--field {
+  gap: 12px;
+}
+
+.ios-field-label {
+  width: 60px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #475569;
+}
+
+.ios-field-input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 13px;
+  color: #0f172a;
+  font-family: inherit;
+}
+
+.ios-link-btn {
+  background: transparent;
+  border: none;
+  color: #0c5e4a;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  font-family: inherit;
+}
+
+.ios-copy-chip,
+.ios-primary-chip,
+.ios-danger-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.ios-copy-chip {
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  color: #475569;
+}
+
+.ios-copy-chip:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+.ios-primary-chip {
+  background: #0c5e4a;
+  border: none;
+  color: #ffffff;
+}
+
+.ios-primary-chip:hover {
+  background: #094738;
+}
+
+.ios-danger-chip {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #dc2626;
+}
+
+.ios-danger-chip:hover {
+  background: #fee2e2;
+}
+
+.ios-active-pill {
+  font-size: 10px;
+  font-weight: 700;
+  color: #059669;
+  background: #ecfdf5;
+  padding: 2px 7px;
+  border-radius: 99px;
+  border: 1px solid #a7f3d0;
+}
+
+.ios-standby-pill {
+  font-size: 10px;
+  font-weight: 600;
+  color: #64748b;
+  background: #f8fafc;
+  padding: 2px 7px;
+  border-radius: 99px;
+}
+
+.ios-delete-dev-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #94a3b8;
+  transition: color 0.15s ease;
+}
+
+.ios-delete-dev-btn:hover {
+  color: #dc2626;
+}
+
+.ios-device-form {
+  padding: 12px 14px;
+  background: #f8fafc;
+  border-top: 1px solid #f1f5f9;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ios-device-form .ios-field-input {
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 8px 10px;
+}
+
+.ios-alert-banner {
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  margin-top: 8px;
+}
+
+.ios-alert-banner--error {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #991b1b;
+}
+
+.ios-alert-banner--success {
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  color: #065f46;
+}
+
+.ios-info-hero-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+
+.ios-info-hero-icon--orange {
+  background: #d97706;
+}
+
+.ios-info-hero-icon--green {
+  background: #059669;
+}
+
+.ios-info-hero-icon--teal {
+  background: #0d9488;
+}
+
+.ios-info-hero-icon--pink {
+  background: #e11d48;
+}
+
+.ios-action-pill {
+  padding: 5px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #ffffff;
+  background: #0c5e4a;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  font-family: inherit;
+}
+
+.ios-action-pill:hover:not(:disabled) {
+  background: #094738;
+}
+
+.ios-action-pill:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.spin-anim {
+  animation: spinAround 0.8s linear infinite;
+}
+
+@keyframes spinAround {
+  to { transform: rotate(360deg); }
+}

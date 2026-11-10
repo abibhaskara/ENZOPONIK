@@ -1,0 +1,114 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    //
+    // Collection: users/{userId}
+    // Document ID: Firebase Auth UID or local/offline identifier ('offline_user')
+    // Fields:
+    //   - uid: string
+    //   - displayName: string (optional)
+    //   - email: string (optional)
+    //   - photoURL: string (optional)
+    //   - subscriptionTier: string ('free' | 'pro')
+    //   - activeDeviceId: string
+    //   - createdAt: timestamp
+    //   - lastLoginAt: timestamp
+    //
+    // Collection: devices/{deviceId}
+    // Document ID: Physical hardware identifier (e.g., 'MANIK-TOWER-01')
+    // Fields:
+    //   - deviceId: string
+    //   - ownerUid: string
+    //   - name: string
+    //   - status: string ('online' | 'offline')
+    //   - claimedAt: timestamp
+    //   - lastSeen: timestamp
+    //
+    // Subcollection: devices/{deviceId}/daily_snapshots/{snapshotId}
+    // Document ID: Snapshot date string (YYYY-MM-DD)
+    // Fields:
+    //   - date: string (YYYY-MM-DD)
+    //   - avgTemp: number
+    //   - avgHumidity: number
+    //   - avgMoisture: number
+    //   - healthScore: number
+    //   - tier: string ('free' | 'pro')
+    //   - expireAt: timestamp
+    //   - createdAt: timestamp
+    //
+    // Collection: telemetry/{document=**}
+    // Hardware sensor telemetry (ESP32 live streaming state)
+    //
+    // Collection: telemetry_history/{document=**}
+    // Historical time-series sensor readings
+    //
+    // Collection: alerts/{alertId}
+    // System, irrigation, and crop warnings/alerts
+    //
+    // Collection: device_controls/{controlId}
+    // Actuator controls (sprinklers, flushing, pump states)
+    //
+    // Collection: user_profiles/{userId}
+    // Farmer crop profiles and threshold configurations
+    // ===============================================================
+
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // 1. User document: Allow authenticated owner or unauthenticated offline/local testing
+    match /users/{userId} {
+      allow read, write: if isOwner(userId)
+                         || userId == 'offline_user'
+                         || userId == 'default_farmer'
+                         || !isAuthenticated();
+    }
+
+    // 2. IoT hardware devices & daily snapshots
+    // Open read and write for seamless ESP32 hardware streaming, simulator scripts, and web client claim workflows
+    match /devices/{deviceId} {
+      allow read, write: if true;
+
+      // Subcollection for daily crop aggregated snapshots
+      match /daily_snapshots/{snapshotId} {
+        allow read, write: if true;
+      }
+    }
+
+    // 3. Sensor telemetry (ESP32 live status & historical series)
+    match /telemetry/{document=**} {
+      allow read, write: if true;
+    }
+
+    match /telemetry_history/{document=**} {
+      allow read, write: if true;
+    }
+
+    // 4. System and crop warnings/alerts
+    match /alerts/{alertId} {
+      allow read, write: if true;
+    }
+
+    // 5. Remote pump, sprinkler, and irrigation actuator controls
+    match /device_controls/{controlId} {
+      allow read, write: if true;
+    }
+
+    // 6. User crop profiles: Allow authenticated owner or unauthenticated offline/local testing
+    match /user_profiles/{userId} {
+      allow read, write: if isOwner(userId)
+                         || userId == 'default_farmer'
+                         || userId == 'offline_user'
+                         || !isAuthenticated();
+    }
+  }
+}

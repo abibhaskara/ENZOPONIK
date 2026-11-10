@@ -1,0 +1,454 @@
+/* ==========================================================================
+   Analysis.css (Reports / Laporan)
+   Adapted to Settings / Dashboard Clean Design Language:
+   - Sage #f0f2ee Page Background
+   - Clean Header Title & Location Pill
+   - Weather & Microclimate Overview Card (border: 1.5px solid #e4e6e2)
+   - Tactile Grouped Cards with Tinted Icon Boxes
+   - Smooth Expandable AI Insight Recommendations
+   ========================================================================== */
+
+.rep-page {
+  min-height: 100dvh;
+  background-color: #f0f2ee;
+  font-family: var(--font-body, 'Inter', -apple-system, sans-serif);
+  padding-bottom: 110px;
+}
+
+.rep-container {
+  max-width: 580px;
+  margin: 0 auto;
+  padding: calc(24px + env(safe-area-inset-top)) 16px 24px;
+}
+
+/* --------------------------------------------------------------------------
+   HEADER
+   -------------------------------------------------------------------------- */
+.rep-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.rep-header__info {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.rep-title {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -0.025em;
+  line-height: 1.2;
+}
+
+.rep-subtitle {
+  margin: 0;
+  font-size: 12px;
+  color: #64748b;
+  line-height: 1.4;
+}
+
+.rep-loc-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 10px;
+  border-radius: 99px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  color: #475569;
+  font-size: 11px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+/* --------------------------------------------------------------------------
+   WEATHER & CLIMATE SUMMARY CARD
+   -------------------------------------------------------------------------- */
+.rep-weather-card {
+  background: #ffffff;
+  border: 1.5px solid #e4e6e2;
+  border-radius: 20px;
+  padding: 16px 18px;
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.rep-weather-main {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.rep-weather-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.rep-weather-icon-box {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: rgba(217, 119, 6, 0.12);
+  color: #d97706;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.rep-weather-temp-wrap {
+  display: flex;
+  align-items: baseline;
+}
+
+.rep-weather-temp-num {
+  font-size: 34px;
+  font-weight: 850;
+  color: #0f172a;
+  line-height: 1;
+  letter-spacing: -0.03em;
+}
+
+.rep-weather-temp-deg {
+  font-size: 16px;
+  font-weight: 600;
+  color: #64748b;
+  margin-left: 2px;
+}
+
+.rep-weather-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  text-align: right;
+  gap: 2px;
+}
+
+.rep-weather-day {
+  font-size: 13px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.rep-weather-desc {
+  font-size: 12px;
+  color: #64748b;
+  text-transform: capitalize;
+}
+
+/* Ambient Metrics Row */
+.rep-weather-metrics {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 12px 10px;
+  background: #f8fafc;
+  border-radius: 14px;
+  border: 1px solid #f1f5f9;
+}
+
+.rep-metric-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  text-align: center;
+  flex: 1;
+}
+
+.rep-metric-val {
+  font-size: 14px;
+  font-weight: 750;
+  color: #0f172a;
+}
+
+.rep-metric-lbl {
+  font-size: 10px;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.rep-metric-divider {
+  width: 1px;
+  height: 24px;
+  background-color: #e2e8f0;
+}
+
+/* Forecast Header with Toggle */
+.rep-forecast-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding-top: 4px;
+}
+
+.rep-forecast-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.rep-forecast-toggle {
+  display: inline-flex;
+  align-items: center;
+  background-color: #f1f5f9;
+  border-radius: 99px;
+  padding: 2px;
+  border: 1px solid #e2e8f0;
+}
+
+.rep-toggle-btn {
+  padding: 3px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #64748b;
+  background: transparent;
+  border: none;
+  border-radius: 99px;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+  font-family: inherit;
+}
+
+.rep-toggle-btn--active {
+  background-color: #ffffff;
+  color: #0c5e4a;
+  font-weight: 700;
+}
+
+/* Forecast Strip & Pills */
+.rep-forecast-strip {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+}
+
+.rep-forecast-pill {
+  flex: 1;
+  min-width: 58px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 4px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  text-align: center;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.rep-forecast-pill--active {
+  background: rgba(12, 94, 74, 0.08);
+  border-color: #0c5e4a;
+}
+
+.rep-forecast-time {
+  font-size: 10px;
+  font-weight: 600;
+  color: #64748b;
+}
+
+.rep-forecast-icon--sun {
+  color: #d97706;
+}
+
+.rep-forecast-icon--rain {
+  color: #0284c7;
+}
+
+.rep-forecast-temp {
+  font-size: 12px;
+  font-weight: 750;
+  color: #0f172a;
+}
+
+.rep-forecast-sub {
+  font-size: 9px;
+  font-weight: 600;
+  color: #64748b;
+}
+
+.rep-forecast-empty {
+  padding: 12px;
+  font-size: 12px;
+  color: #64748b;
+  text-align: center;
+  width: 100%;
+}
+
+/* --------------------------------------------------------------------------
+   GROUPS & ROWS (Aligned with Settings Style)
+   -------------------------------------------------------------------------- */
+.rep-group-wrap {
+  margin-bottom: 20px;
+}
+
+.rep-section-badge {
+  font-size: 11px;
+  font-weight: 700;
+  color: #0c5e4a;
+  letter-spacing: 0.04em;
+}
+
+.rep-card-group {
+  background: #ffffff;
+  border: 1.5px solid #e4e6e2;
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.rep-insight-item {
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.rep-insight-item:last-child {
+  border-bottom: none;
+}
+
+.rep-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 13px 16px;
+  border-bottom: 1px solid #f1f5f9;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.rep-row:hover {
+  background: #f8fafc;
+}
+
+.rep-row:last-child {
+  border-bottom: none;
+}
+
+.rep-insight-item .rep-row {
+  border-bottom: none;
+}
+
+/* Tinted Icon Boxes matching Brand Colors */
+.rep-row__icon-box {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.rep-icon-box--amber {
+  background: rgba(217, 119, 6, 0.12);
+  color: #d97706;
+}
+
+.rep-icon-box--emerald,
+.rep-row__icon-box--emerald {
+  background: rgba(5, 150, 105, 0.12);
+  color: #059669;
+}
+
+.rep-row__icon-box--cyan {
+  background: rgba(2, 132, 199, 0.12);
+  color: #0284c7;
+}
+
+.rep-row__icon-box--amber {
+  background: rgba(217, 119, 6, 0.12);
+  color: #d97706;
+}
+
+.rep-row__content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.rep-row__label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.rep-row__value {
+  font-size: 11px;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.rep-chevron {
+  color: #cbd5e1;
+  flex-shrink: 0;
+  transition: transform 0.2s ease, color 0.15s ease;
+}
+
+.rep-row:hover .rep-chevron {
+  color: #0c5e4a;
+}
+
+.rep-chevron--open {
+  transform: rotate(90deg);
+  color: #0c5e4a;
+}
+
+/* Expandable AI Insight Box */
+.rep-insight-desc-box {
+  background: #f8fafc;
+  border-top: 1px solid #f1f5f9;
+  padding: 14px 16px;
+  animation: repFadeDown 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes repFadeDown {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.rep-insight-loading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: #0c5e4a;
+  font-weight: 600;
+}
+
+.rep-spin {
+  animation: repSpin 0.7s linear infinite;
+}
+
+@keyframes repSpin {
+  to { transform: rotate(360deg); }
+}
+
+.rep-insight-text {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.55;
+  color: #334155;
+}

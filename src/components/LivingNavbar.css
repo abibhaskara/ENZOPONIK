@@ -1,0 +1,108 @@
+
+
+.living-navbar {
+    position: relative;
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    padding: 0;
+    pointer-events: none; 
+}
+
+.living-navbar__inner {
+    pointer-events: auto; 
+    display: flex;
+    align-items: center;
+    gap: 0; 
+    padding: 6px;
+    background: rgba(255, 255, 255, 0.65);
+    backdrop-filter: blur(12px) saturate(160%);
+    -webkit-backdrop-filter: blur(12px) saturate(160%);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 9999px;
+    box-shadow: 
+        0 4px 6px rgba(0, 0, 0, 0.02),
+        0 12px 24px rgba(0, 0, 0, 0.06);
+    overflow: hidden;
+}
+
+
+.living-navbar__link {
+    text-decoration: none;
+    color: inherit;
+    -webkit-tap-highlight-color: transparent;
+    outline: none;
+    position: relative;
+    z-index: 1;
+}
+
+.living-navbar__item-container {
+    position: relative;
+    padding: 0;
+}
+
+
+.living-navbar__item {
+    display: flex;
+    align-items: center;
+    padding: 10px 16px;
+    border-radius: 9999px;
+    cursor: pointer;
+    position: relative;
+    z-index: 2;
+    white-space: nowrap;
+    will-change: transform, filter;
+    color: var(--text-secondary);
+}
+
+.living-navbar__item--active {
+    color: var(--primary-900);
+}
+
+.living-navbar__icon {
+    flex-shrink: 0;
+    transition: color 0.2s ease;
+}
+
+.living-navbar__item--active .living-navbar__icon {
+    color: var(--primary-900);
+}
+
+
+.living-navbar__label {
+    font-family: var(--font-body);
+    font-size: var(--text-base);
+    font-weight: 600;
+    overflow: hidden;
+    display: inline-block;
+    white-space: nowrap;
+}
+
+
+.living-navbar__pill {
+    position: absolute;
+    inset: 0;
+    background: #ffffff; 
+    border-radius: 9999px;
+    z-index: 1;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); 
+}
+
+
+@media (max-width: 639px) {
+    .living-navbar {
+        width: auto;
+    }
+
+    .living-navbar__inner {
+        padding: 4px;
+    }
+}
+
+
+.living-navbar__link,
+.living-navbar__item,
+.living-navbar__pill {
+    transition: none !important;
+    will-change: auto !important;
+}
