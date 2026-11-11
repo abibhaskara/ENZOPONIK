@@ -313,7 +313,43 @@ export default {
         });
       }
 
-      // 7. Route Tidak Ditemukan
+      // 7. Gemini AI Agronomy Proxy (Edge Fallback)
+      if (path === '/api/ai/analyze' && method === 'POST') {
+        const body = await request.json();
+        const prompt = body.prompt || '';
+        const systemInstruction = body.systemInstruction;
+        const apiKey = env.GEMINI_API_KEY || (body.apiKey ? String(body.apiKey).trim() : '');
+        if (!apiKey) {
+          return json({ error: 'GEMINI_API_KEY binding not configured on Worker' }, 500);
+        }
+        const model = body.model || 'gemini-3.5-flash';
+
+        const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+        const geminiBody = {
+          contents: [{ parts: [{ text: prompt }] }],
+        };
+        if (systemInstruction) {
+          geminiBody.system_instruction = {
+            parts: [{ text: typeof systemInstruction === 'string' ? systemInstruction : JSON.stringify(systemInstruction) }],
+          };
+        }
+
+        const geminiRes = await fetch(geminiUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(geminiBody),
+        });
+
+        const geminiData = await geminiRes.json();
+        if (!geminiRes.ok) {
+          return json({ error: geminiData.error?.message || 'Gemini error' }, geminiRes.status);
+        }
+
+        const text = geminiData.candidates?.[0]?.content?.parts?.[0]?.text || '';
+        return json({ success: true, text });
+      }
+
+      // 8. Route Tidak Ditemukan
       return json({ error: 'Endpoint not found', path }, 404);
     } catch (err) {
       console.error('[Worker Error]', err.stack || err.message);
