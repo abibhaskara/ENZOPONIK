@@ -7,6 +7,8 @@
     "dev": "vite",
     "build": "vite build",
     "simulate": "node scripts/simulate_telemetry.mjs",
+    "deploy:worker": "wrangler deploy",
+    "dev:worker": "wrangler dev",
     "lint": "eslint .",
     "preview": "vite preview"
   },
@@ -30,6 +32,7 @@
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.19",
     "globals": "^16.0.0",
-    "vite": "^6.3.5"
+    "vite": "^6.3.5",
+    "wrangler": "^4.160.0"
   }
 }

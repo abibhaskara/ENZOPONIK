@@ -1,0 +1,9 @@
+name = "enzoponik-worker"
+main = "worker/index.js"
+compatibility_date = "2024-11-01"
+compatibility_flags = ["nodejs_compat"]
+
+[vars]
+FIREBASE_PROJECT_ID = "enzoponik"
+FIREBASE_API_KEY = "AIzaSyBT0A4A2ah4bfwC3jWrdZnLpr5FiebQDXk"
+DEFAULT_DEVICE_ID = "ENZOPONIK-01"
