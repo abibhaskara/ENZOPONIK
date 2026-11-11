@@ -7,3 +7,4 @@ compatibility_flags = ["nodejs_compat"]
 FIREBASE_PROJECT_ID = "enzoponik"
 FIREBASE_API_KEY = "AIzaSyBT0A4A2ah4bfwC3jWrdZnLpr5FiebQDXk"
 DEFAULT_DEVICE_ID = "ENZOPONIK-01"
+

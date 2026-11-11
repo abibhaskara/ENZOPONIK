@@ -8,6 +8,8 @@
     "build": "vite build",
     "simulate": "node scripts/simulate_telemetry.mjs",
     "deploy:worker": "wrangler deploy",
+    "deploy:web": "npm run build && wrangler pages deploy dist --project-name enzoponik --branch main --commit-dirty=true",
+    "deploy:all": "npm run deploy:worker && npm run deploy:web",
     "dev:worker": "wrangler dev",
     "lint": "eslint .",
     "preview": "vite preview"
