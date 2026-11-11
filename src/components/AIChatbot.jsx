@@ -162,7 +162,7 @@ export default function AIChatbot() {
             }));
             const result = await executeWithGeminiFallback(
                 {
-                    model: 'gemini-2.5-flash',
+                    model: 'gemini-3.8-flash',
                     systemInstruction: buildSystemContext(
                         sensorData, esp32Data, healthScore, zones, alerts,
                         harvestInfo, realWeather, lang, esp32Connected, cropProfile

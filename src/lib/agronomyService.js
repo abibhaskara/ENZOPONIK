@@ -85,7 +85,7 @@ End with 1 concrete action recommendation for the grower. Be concise.
 IMPORTANT: Respond strictly in ${langInstructions}.`;
 
     const result = await executeWithGeminiFallback(
-      { model: 'gemini-1.5-flash' },
+      { model: 'gemini-3.8-flash' },
       async (model) => await model.generateContent(prompt)
     );
 
@@ -135,7 +135,7 @@ Respond with ONLY the 2-sentence insight, no extra headers or markdown formattin
 IMPORTANT: Respond strictly in ${langInstructions}.`;
 
     const result = await executeWithGeminiFallback(
-      { model: 'gemini-1.5-flash' },
+      { model: 'gemini-3.8-flash' },
       async (model) => await model.generateContent(prompt)
     );
 

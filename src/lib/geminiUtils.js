@@ -20,9 +20,17 @@ export function parseGeminiError(err, t) {
 /**
  * Native REST call to Google Generative Language API
  */
-export async function callGeminiRest({ apiKey, model = 'gemini-1.5-flash', contents, systemInstruction }) {
-  // Normalize model name (e.g., fallback 2.5 to 1.5/2.0)
-  const normalizedModel = model.includes('2.5') ? 'gemini-1.5-flash' : model;
+export function normalizeModelName(model) {
+  if (!model) return 'gemini-3.8-flash';
+  // Map retired/deprecated models to the active generation model
+  if (model.includes('1.5') || model.includes('2.0') || model.includes('2.5')) {
+    return 'gemini-3.8-flash';
+  }
+  return model;
+}
+
+export async function callGeminiRest({ apiKey, model = 'gemini-3.8-flash', contents, systemInstruction }) {
+  const normalizedModel = normalizeModelName(model);
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${normalizedModel}:generateContent?key=${apiKey}`;
 
   const body = { contents };
@@ -59,7 +67,7 @@ export async function executeWithGeminiFallback(modelConfig = {}, executeFn) {
     throw new Error('API key missing. Check VITE_GEMINI_API_KEY in .env');
   }
 
-  const modelName = modelConfig.model || 'gemini-1.5-flash';
+  const modelName = normalizeModelName(modelConfig.model || 'gemini-3.8-flash');
   let lastErr;
 
   for (let i = 0; i < keys.length; i++) {
