@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ENZOPONIK - Generator Stiker Fisik QR Menara</title>
+  <style>
+    :root {
+      --primary: #10b981;
+      --primary-dark: #059669;
+      --bg-page: #f8fafc;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg-page);
+      color: var(--text-main);
+      padding: 24px;
+    }
+
+    .no-print-toolbar {
+      max-width: 900px;
+      margin: 0 auto 28px auto;
+      background: #ffffff;
+      padding: 24px;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+      border: 1px solid var(--border);
+    }
+
+    .toolbar-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 16px;
+    }
+
+    .toolbar-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: #0f172a;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .toolbar-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .form-group label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .form-group input, .form-group select {
+      padding: 10px 14px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-main);
+      outline: none;
+      transition: all 0.2s;
+    }
+
+    .form-group input:focus, .form-group select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
+    }
+
+    .btn-row {
+      display: flex;
+      gap: 12px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 11px 22px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all 0.15s ease-in-out;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-dark);
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background: #f1f5f9;
+      color: var(--text-main);
+    }
+
+    .btn-secondary:hover {
+      background: #e2e8f0;
+    }
+
+    /* Print Preview Sheet */
+    .sheet-container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+      border: 1px solid var(--border);
+    }
+
+    .sheet-title-info {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .sticker-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: flex-start;
+    }
+
+    /* STIKER FISIK UKURAN PRESISI (40mm x 40mm) */
+    .sticker-card {
+      width: 45mm;
+      height: 45mm;
+      background: #ffffff;
+      border: 1.5px dashed #cbd5e1;
+      border-radius: 10px;
+      padding: 3mm;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      text-align: center;
+      box-sizing: border-box;
+      position: relative;
+      background-clip: padding-box;
+      page-break-inside: avoid;
+    }
+
+    .sticker-brand {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      font-size: 9pt;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      color: #064e3b;
+      text-transform: uppercase;
+      line-height: 1;
+    }
+
+    .sticker-brand svg {
+      width: 12px;
+      height: 12px;
+      fill: #10b981;
+    }
+
+    .sticker-qr {
+      width: 25mm;
+      height: 25mm;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: white;
+    }
+
+    .sticker-qr canvas, .sticker-qr img {
+      width: 100% !important;
+      height: 100% !important;
+      image-rendering: pixelated;
+    }
+
+    .sticker-footer {
+      width: 100%;
+      border-top: 1px solid #000;
+      padding-top: 1.5mm;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1px;
+    }
+
+    .sticker-id {
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 8.5pt;
+      font-weight: 800;
+      color: #000;
+      letter-spacing: 1px;
+      line-height: 1;
+    }
+
+    .sticker-hint {
+      font-size: 5.5pt;
+      font-weight: 600;
+      color: #475569;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      line-height: 1;
+    }
+
+    /* Print Specific Media Styling */
+    @media print {
+      body {
+        background: white;
+        padding: 0;
+        margin: 0;
+      }
+
+      .no-print-toolbar, .sheet-title-info {
+        display: none !important;
+      }
+
+      .sheet-container {
+        box-shadow: none;
+        border: none;
+        padding: 0;
+        margin: 0;
+        max-width: 100%;
+      }
+
+      .sticker-grid {
+        gap: 8mm;
+      }
+
+      .sticker-card {
+        border: 1px dashed #94a3b8 !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+    }
+  </style>
+  <!-- CDN QRCode Library dengan fallback offline -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+</head>
+<body>
+
+  <div class="no-print-toolbar">
+    <div class="toolbar-header">
+      <div class="toolbar-title">
+        <span>🌱</span>
+        <span>ENZOPONIK - Pembuat Stiker QR Fisik Menara</span>
+      </div>
+      <button class="btn btn-primary" onclick="window.print()">
+        🖨️ Cetak Stiker (Print / PDF)
+      </button>
+    </div>
+
+    <div class="toolbar-grid">
+      <div class="form-group">
+        <label>ID Perangkat Menara</label>
+        <input type="text" id="inputDeviceId" value="ENZOPONIK-01" oninput="regenerate()">
+      </div>
+
+      <div class="form-group">
+        <label>Format Payload QR</label>
+        <select id="inputPayloadFormat" onchange="regenerate()">
+          <option value="uri">haru://claim?dev=ID (Rekomendasi App)</option>
+          <option value="plain">Teks Polos (ENZOPONIK-01)</option>
+          <option value="json">JSON ({"deviceId":"ID"})</option>
+          <option value="web">Web URL (https://enzoponik.pages.dev)</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Jumlah Stiker di Lembar</label>
+        <select id="inputStickerCount" onchange="regenerate()">
+          <option value="1">1 Stiker (Preview Tunggal)</option>
+          <option value="6" selected>6 Stiker (1 Lembar Kertas)</option>
+          <option value="12">12 Stiker (Batch Produksi)</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Ukuran Stiker</label>
+        <select id="inputSize" onchange="updateSize(this.value)">
+          <option value="45" selected>45mm x 45mm (Standar Menara)</option>
+          <option value="40">40mm x 40mm (Kompak)</option>
+          <option value="50">50mm x 50mm (Besar)</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="setSequential()">
+        🔢 Buat Seri Otomatis (ENZOPONIK-01 s/d 06)
+      </button>
+    </div>
+  </div>
+
+  <div class="sheet-container">
+    <div class="sheet-title-info">
+      <span>📐 Ukuran Fisik Stiker: <strong id="lblDimensions">45mm x 45mm</strong> (Waterproof Vinyl / Thermal Paper)</span>
+      <span>Gunting mengikuti garis putus-putus</span>
+    </div>
+
+    <div class="sticker-grid" id="stickerContainer">
+      <!-- Stiker di-render dinamis oleh JavaScript -->
+    </div>
+  </div>
+
+  <script>
+    let isSequential = false;
+
+    function getPayload(deviceId, format) {
+      if (format === 'uri') {
+        return `haru://claim?dev=${encodeURIComponent(deviceId)}&name=${encodeURIComponent(deviceId)}`;
+      } else if (format === 'json') {
+        return JSON.stringify({ deviceId: deviceId, model: "ENZOPONIK-TOWER" });
+      } else if (format === 'web') {
+        return `https://enzoponik.pages.dev/?claim=${encodeURIComponent(deviceId)}`;
+      } else {
+        return deviceId;
+      }
+    }
+
+    function createStickerHtml(deviceId, format) {
+      const payload = getPayload(deviceId, format);
+      const card = document.createElement('div');
+      card.className = 'sticker-card';
+
+      card.innerHTML = `
+        <div class="sticker-brand">
+          <svg viewBox="0 0 24 24"><path d="M12 2L4 7v10l8 5 8-5V7l-8-5z"/></svg>
+          ENZOPONIK
+        </div>
+        <div class="sticker-qr" id="qr-${Math.random().toString(36).substr(2, 9)}"></div>
+        <div class="sticker-footer">
+          <div class="sticker-id">${deviceId}</div>
+          <div class="sticker-hint">PINDAI DENGAN KAMERA APLIKASI</div>
+        </div>
+      `;
+
+      return { element: card, payload: payload };
+    }
+
+    function regenerate() {
+      const baseId = document.getElementById('inputDeviceId').value.trim() || 'ENZOPONIK-01';
+      const format = document.getElementById('inputPayloadFormat').value;
+      const count = parseInt(document.getElementById('inputStickerCount').value, 10);
+      const container = document.getElementById('stickerContainer');
+      container.innerHTML = '';
+
+      for (let i = 0; i < count; i++) {
+        let currentId = baseId;
+        if (isSequential && count > 1) {
+          const match = baseId.match(/^(.*?)(\d+)$/);
+          if (match) {
+            const prefix = match[1];
+            const startNum = parseInt(match[2], 10);
+            const digits = match[2].length;
+            const newNum = String(startNum + i).padStart(digits, '0');
+            currentId = `${prefix}${newNum}`;
+          } else {
+            currentId = `${baseId}-${i + 1}`;
+          }
+        }
+
+        const stickerData = createStickerHtml(currentId, format);
+        container.appendChild(stickerData.element);
+
+        // Generate QR Code
+        const qrWrapper = stickerData.element.querySelector('.sticker-qr');
+        if (typeof QRCode !== 'undefined') {
+          new QRCode(qrWrapper, {
+            text: stickerData.payload,
+            width: 128,
+            height: 128,
+            colorDark: "#000000",
+            colorLight: "#ffffff",
+            correctLevel: QRCode.CorrectLevel.M
+          });
+        } else {
+          // Fallback bila tanpa internet (Google Charts QR API / SVG generator)
+          const img = document.createElement('img');
+          img.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(stickerData.payload)}`;
+          qrWrapper.appendChild(img);
+        }
+      }
+    }
+
+    function setSequential() {
+      isSequential = true;
+      document.getElementById('inputStickerCount').value = "6";
+      regenerate();
+    }
+
+    function updateSize(mm) {
+      document.getElementById('lblDimensions').innerText = `${mm}mm x ${mm}mm`;
+      const cards = document.querySelectorAll('.sticker-card');
+      cards.forEach(c => {
+        c.style.width = `${mm}mm`;
+        c.style.height = `${mm}mm`;
+      });
+    }
+
+    window.onload = function() {
+      regenerate();
+    };
+  </script>
+</body>
+</html>
