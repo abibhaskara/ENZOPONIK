@@ -110,7 +110,10 @@ Buka file [`firmware/esp32_enzoponik/config.h`](config.h) pada Arduino IDE, lalu
 
 ```cpp
 // 1. Identitas Menara
-#define DEVICE_ID             "ENZOPONIK-01"
+// Biarkan "AUTO" agar ESP32 secara mandiri men-generate ID unik dari chip eFuse MAC
+// berformat standar: ezpn-[3 angka][5 huruf] (Contoh: ezpn-742kxmpt).
+// Atau tentukan sendiri secara statis, misal: "ezpn-391abczk"
+#define DEVICE_ID             "AUTO"
 
 // 2. Kredensial Wi-Fi
 #define WIFI_SSID             "NAMA_WIFI_RUMAH_ANDA"
@@ -213,3 +216,4 @@ Kami telah menyediakan file template stiker siap cetak:
 ### 4. ESP32 restart sendiri saat pompa mulai berputar (Brownout Detector triggered)
 - **Penyebab:** Lonjakan arus motor pompa menarik daya dari regulator ESP32 sehingga tegangan drop di bawah 2.7V.
 - **Solusi:** Pisahkan sumber daya pompa menggunakan adaptor DC eksternal, dan hubungkan hanya kabel Ground-nya ke pin GND ESP32 (*Common Ground*).
+

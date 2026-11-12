@@ -65,7 +65,7 @@ public:
   }
 
   // Mengirim pembacaan sensor ke Cloudflare Worker dan menerima instruksi pompa
-  CloudResponse sendTelemetry(int soilMoisture, int rawAdc, bool pumpActive, int uptimeSec) {
+  CloudResponse sendTelemetry(const String& deviceId, int soilMoisture, int rawAdc, bool pumpActive, int uptimeSec) {
     CloudResponse res;
     res.success = false;
     res.shouldRunPump = false;
@@ -92,7 +92,7 @@ public:
 
     // Susun JSON string secara ringkas & efisien
     String jsonPayload = "{";
-    jsonPayload += "\"deviceId\":\"" + String(DEVICE_ID) + "\",";
+    jsonPayload += "\"deviceId\":\"" + deviceId + "\",";
     jsonPayload += "\"soilMoisture\":" + String(soilMoisture) + ",";
     jsonPayload += "\"rawAdc\":" + String(rawAdc) + ",";
     jsonPayload += "\"pumpActive\":" + String(pumpActive ? "true" : "false") + ",";
@@ -143,3 +143,4 @@ public:
 };
 
 #endif // NETWORK_H
+

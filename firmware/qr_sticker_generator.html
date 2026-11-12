@@ -285,14 +285,19 @@
     <div class="toolbar-grid">
       <div class="form-group">
         <label>ID Perangkat Menara</label>
-        <input type="text" id="inputDeviceId" value="ENZOPONIK-01" oninput="regenerate()">
+        <div style="display: flex; gap: 8px;">
+          <input type="text" id="inputDeviceId" value="ezpn-742kxmpt" oninput="regenerate()" style="flex: 1;">
+          <button type="button" class="btn btn-secondary" onclick="generateNewRandomId()" title="Generate ID Acak ezpn-[3 angka][5 huruf]" style="padding: 10px 14px;">
+            🎲 Acak
+          </button>
+        </div>
       </div>
 
       <div class="form-group">
         <label>Format Payload QR</label>
         <select id="inputPayloadFormat" onchange="regenerate()">
           <option value="uri">haru://claim?dev=ID (Rekomendasi App)</option>
-          <option value="plain">Teks Polos (ENZOPONIK-01)</option>
+          <option value="plain">Teks Polos (ezpn-...)</option>
           <option value="json">JSON ({"deviceId":"ID"})</option>
           <option value="web">Web URL (https://enzoponik.pages.dev)</option>
         </select>
@@ -317,9 +322,12 @@
       </div>
     </div>
 
-    <div class="btn-row">
+    <div class="btn-row" style="flex-wrap: wrap;">
+      <button class="btn btn-secondary" onclick="generateUniqueBatch()">
+        ⚡ Buat Setiap Stiker ID Unik (ezpn-XXXaaaaa)
+      </button>
       <button class="btn btn-secondary" onclick="setSequential()">
-        🔢 Buat Seri Otomatis (ENZOPONIK-01 s/d 06)
+        🔢 Buat Seri Berurutan
       </button>
     </div>
   </div>
@@ -337,6 +345,40 @@
 
   <script>
     let isSequential = false;
+    let isUniqueBatch = false;
+
+    // Generator ID Otomatis: ezpn-[3 angka][5 huruf]
+    function generateEzpnId() {
+      const digits = Math.floor(100 + Math.random() * 900); // 3 digit angka (100 - 999)
+      const letters = 'abcdefghjkmnpqrstuvwxyz'; // 23 huruf tanpa karakter ambigu (i, l, o)
+      let letterPart = '';
+      for (let i = 0; i < 5; i++) {
+        letterPart += letters.charAt(Math.floor(Math.random() * letters.length));
+      }
+      return `ezpn-${digits}${letterPart}`;
+    }
+
+    function generateNewRandomId() {
+      isSequential = false;
+      isUniqueBatch = false;
+      const newId = generateEzpnId();
+      document.getElementById('inputDeviceId').value = newId;
+      regenerate();
+    }
+
+    function generateUniqueBatch() {
+      isUniqueBatch = true;
+      isSequential = false;
+      document.getElementById('inputStickerCount').value = "6";
+      regenerate();
+    }
+
+    function setSequential() {
+      isSequential = true;
+      isUniqueBatch = false;
+      document.getElementById('inputStickerCount').value = "6";
+      regenerate();
+    }
 
     function getPayload(deviceId, format) {
       if (format === 'uri') {
@@ -371,7 +413,7 @@
     }
 
     function regenerate() {
-      const baseId = document.getElementById('inputDeviceId').value.trim() || 'ENZOPONIK-01';
+      const baseId = document.getElementById('inputDeviceId').value.trim() || generateEzpnId();
       const format = document.getElementById('inputPayloadFormat').value;
       const count = parseInt(document.getElementById('inputStickerCount').value, 10);
       const container = document.getElementById('stickerContainer');
@@ -379,7 +421,9 @@
 
       for (let i = 0; i < count; i++) {
         let currentId = baseId;
-        if (isSequential && count > 1) {
+        if (isUniqueBatch && count > 1) {
+          currentId = (i === 0) ? baseId : generateEzpnId();
+        } else if (isSequential && count > 1) {
           const match = baseId.match(/^(.*?)(\d+)$/);
           if (match) {
             const prefix = match[1];
@@ -407,18 +451,12 @@
             correctLevel: QRCode.CorrectLevel.M
           });
         } else {
-          // Fallback bila tanpa internet (Google Charts QR API / SVG generator)
+          // Fallback bila tanpa internet
           const img = document.createElement('img');
           img.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(stickerData.payload)}`;
           qrWrapper.appendChild(img);
         }
       }
-    }
-
-    function setSequential() {
-      isSequential = true;
-      document.getElementById('inputStickerCount').value = "6";
-      regenerate();
     }
 
     function updateSize(mm) {
@@ -431,8 +469,11 @@
     }
 
     window.onload = function() {
+      const initialId = generateEzpnId();
+      document.getElementById('inputDeviceId').value = initialId;
       regenerate();
     };
   </script>
 </body>
 </html>
+

@@ -6,7 +6,10 @@
 // =========================================================================
 // 1. IDENTITAS PERANGKAT & CLOUD GATEWAY
 // =========================================================================
-#define DEVICE_ID             "ENZOPONIK-01"
+// Set ke "AUTO" agar ESP32 otomatis men-generate ID berbasis eFuse MAC hardware:
+// Format standar: ezpn-[3 angka][5 huruf] (Contoh: ezpn-742kxmpt)
+// Atau tetapkan ID manual statis, contoh: "ezpn-591abcde"
+#define DEVICE_ID             "AUTO"
 #define FIRMWARE_VERSION      "1.0.0"
 
 // Endpoint Cloudflare Worker yang telah aktif & live

@@ -83,3 +83,4 @@ public:
 };
 
 #endif // SENSOR_H
+

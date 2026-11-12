@@ -34,6 +34,7 @@ import { useData } from '../context/DataContext';
 import { useUser } from '../context/UserContext';
 import { useLang, LANGUAGES } from '../context/LanguageContext';
 import { updateDeviceControl } from '../lib/firebaseService';
+import { generateDeviceId } from '../lib/deviceService';
 import './Settings.css';
 
 const AVATAR_PRESETS = [
@@ -590,14 +591,36 @@ export default function Settings() {
 
                 {showAddDevice && (
                   <form onSubmit={handleAddDevice} className="ios-device-form">
-                    <input
-                      type="text"
-                      className="ios-field-input"
-                      placeholder="ID Serial (mis: DEV-TOWER-02)"
-                      value={newDeviceId}
-                      onChange={(e) => setNewDeviceId(e.target.value)}
-                      required
-                    />
+                    <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+                      <input
+                        type="text"
+                        className="ios-field-input"
+                        placeholder="ID Serial (mis: ezpn-742kxmpt)"
+                        value={newDeviceId}
+                        onChange={(e) => setNewDeviceId(e.target.value)}
+                        required
+                        style={{ flex: 1 }}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setNewDeviceId(generateDeviceId('lower'))}
+                        className="ios-mini-btn"
+                        title="Generate ID acak ezpn-[3 angka][5 huruf]"
+                        style={{
+                          whiteSpace: 'nowrap',
+                          padding: '8px 12px',
+                          borderRadius: 8,
+                          fontSize: 12,
+                          fontWeight: 600,
+                          background: 'rgba(16, 185, 129, 0.1)',
+                          color: '#059669',
+                          border: '1px solid rgba(16, 185, 129, 0.25)',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        🎲 Acak ID
+                      </button>
+                    </div>
                     <input
                       type="text"
                       className="ios-field-input"

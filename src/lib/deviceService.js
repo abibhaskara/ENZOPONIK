@@ -20,6 +20,22 @@ import {
 import { db, isFirebaseConfigured } from './firebase';
 
 /**
+ * Auto-generate a device ID matching pattern: ezpn-[3 numbers][5 letters]
+ * @param {'lower'|'upper'} casing - 'lower' (ezpn-742kxmpt) or 'upper' (EZPN-742KXMPT)
+ * @returns {string} Generated device identifier
+ */
+export function generateDeviceId(casing = 'lower') {
+  const digits = Math.floor(100 + Math.random() * 900); // 3 digits: 100 - 999
+  const charset = 'abcdefghjkmnpqrstuvwxyz'; // 23 unambiguous lowercase letters
+  let letterPart = '';
+  for (let i = 0; i < 5; i++) {
+    letterPart += charset.charAt(Math.floor(Math.random() * charset.length));
+  }
+  const id = `ezpn-${digits}${letterPart}`;
+  return casing === 'upper' ? id.toUpperCase() : id;
+}
+
+/**
  * Fetch all devices owned by the given Google user UID
  * @param {string} uid - User's Google UID
  * @returns {Promise<Array>} List of devices

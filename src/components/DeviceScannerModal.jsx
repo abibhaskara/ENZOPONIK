@@ -12,6 +12,7 @@ import {
   Cpu
 } from 'lucide-react';
 import { useUser } from '../context/UserContext';
+import { generateDeviceId } from '../lib/deviceService';
 import './DeviceScannerModal.css';
 
 export default function DeviceScannerModal({ isOpen, onClose, onVerified }) {
@@ -339,11 +340,28 @@ export default function DeviceScannerModal({ isOpen, onClose, onVerified }) {
             </div>
 
             <div className="qr-form-group">
-              <label className="qr-form-label">ID Perangkat (Serial MAC)</label>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <label className="qr-form-label">ID Perangkat (Serial MAC)</label>
+                <button
+                  type="button"
+                  onClick={() => setManualId(generateDeviceId('lower'))}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    color: '#10b981',
+                    fontSize: '11px',
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                    padding: '0 2px'
+                  }}
+                >
+                  🎲 Auto-Generate ID
+                </button>
+              </div>
               <input
                 type="text"
                 className="qr-form-input"
-                placeholder="Contoh: HARU-TWR-88A1"
+                placeholder="Contoh: ezpn-742kxmpt"
                 value={manualId}
                 onChange={(e) => setManualId(e.target.value)}
                 required

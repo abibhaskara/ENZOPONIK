@@ -19,17 +19,39 @@ SoilSensor      sensor(PIN_SOIL_SENSOR, ADC_DRY_DEFAULT, ADC_WET_DEFAULT);
 WaterPump       pump(PIN_PUMP_RELAY, RELAY_ACTIVE_LOW);
 NetworkManager  network;
 
-// Pelacak Waktu (Non-blocking Timers)
+// Pelacak Waktu & Identitas Hardware
+String        activeDeviceId      = "";
 unsigned long lastTelemetryTime   = 0;
 unsigned long lastHeartbeatTime   = 0;
 unsigned long bootTimestamp       = 0;
 bool          ledState            = false;
 
+// Generator ID Perangkat Otomatis: ezpn-[3 angka][5 huruf] berbasis eFuse MAC unik ESP32
+String generateAutoDeviceId() {
+  uint64_t mac = ESP.getEfuseMac();
+  // 3 digit angka (100 - 999)
+  uint32_t numPart = 100 + (uint32_t)(mac % 900);
+
+  // 5 huruf kecil unik
+  const char charset[] = "abcdefghjkmnpqrstuvwxyz"; // 23 karakter tanpa i, l, o agar jelas terbaca
+  char letterPart[6];
+  uint64_t seed = (mac >> 10);
+  for (int i = 0; i < 5; i++) {
+    letterPart[i] = charset[seed % 23];
+    seed = (seed / 23) ^ (mac >> (i * 3));
+  }
+  letterPart[5] = '\0';
+
+  char buf[32];
+  snprintf(buf, sizeof(buf), "ezpn-%03u%s", numPart, letterPart);
+  return String(buf);
+}
+
 void printSystemBanner() {
   Serial.println("\n========================================================");
   Serial.println("         🌱 ENZOPONIK SMART TOWER FIRMWARE 🌱         ");
   Serial.println("========================================================");
-  Serial.printf(" Device ID      : %s\n", DEVICE_ID);
+  Serial.printf(" Device ID      : %s\n", activeDeviceId.c_str());
   Serial.printf(" Firmware Ver   : %s\n", FIRMWARE_VERSION);
   Serial.printf(" Soil Sensor Pin: GPIO %d (ADC1_CH6)\n", PIN_SOIL_SENSOR);
   Serial.printf(" Pump Relay Pin : GPIO %d (%s)\n", PIN_PUMP_RELAY, RELAY_ACTIVE_LOW ? "Active LOW" : "Active HIGH");
@@ -49,11 +71,16 @@ void handleSerialCommands() {
     } else if (cmd == 'r' || cmd == 'R') {
       SoilReading r = sensor.read();
       Serial.printf("[MANUAL SENSOR] Kelembaban: %d%% | ADC Raw: %d\n", r.moisturePercent, r.rawAdc);
+    } else if (cmd == 'i' || cmd == 'I') {
+      uint64_t mac = ESP.getEfuseMac();
+      Serial.printf("[INFO PERANGKAT] ID: %s | eFuse MAC: %04X%08X\n",
+                    activeDeviceId.c_str(), (uint16_t)(mac >> 32), (uint32_t)mac);
     } else if (cmd == 'h' || cmd == 'H') {
       Serial.println("\n[MENU BANTUAN SERIAL]");
       Serial.println(" 'p' / 'P' : Tes nyalakan pompa 5 detik");
       Serial.println(" 's' / 'S' : Matikan pompa segera");
       Serial.println(" 'r' / 'R' : Baca sensor kelembaban saat ini");
+      Serial.println(" 'i' / 'I' : Tampilkan ID perangkat & info chip");
       Serial.println(" 'h' / 'H' : Tampilkan bantuan ini\n");
     }
   }
@@ -85,6 +112,13 @@ void setup() {
 
   pinMode(PIN_STATUS_LED, OUTPUT);
   digitalWrite(PIN_STATUS_LED, LOW);
+
+  // Inisialisasi ID Perangkat (Otomatis ezpn-[3 angka][5 huruf] atau custom)
+  if (String(DEVICE_ID) == "AUTO" || String(DEVICE_ID).length() == 0) {
+    activeDeviceId = generateAutoDeviceId();
+  } else {
+    activeDeviceId = String(DEVICE_ID);
+  }
 
   printSystemBanner();
 
@@ -138,6 +172,7 @@ void loop() {
 
     // Kirim payload JSON ke Cloudflare Worker via HTTPS
     CloudResponse response = network.sendTelemetry(
+      activeDeviceId,
       reading.moisturePercent,
       reading.rawAdc,
       pump.isActive(),
@@ -157,3 +192,4 @@ void loop() {
     Serial.println("--------------------------------------------------------");
   }
 }
+

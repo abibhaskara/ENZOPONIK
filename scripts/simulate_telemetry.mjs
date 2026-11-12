@@ -16,7 +16,7 @@ const WORKER_URL = process.env.VITE_API_BASE_URL
   ? `${process.env.VITE_API_BASE_URL}/api/telemetry`
   : 'https://enzoponik-worker.abibhaskaramulya.workers.dev/api/telemetry';
 
-const DEVICE_ID = process.env.VITE_DEFAULT_DEVICE_ID || 'ENZOPONIK-02';
+const DEVICE_ID = process.env.VITE_DEFAULT_DEVICE_ID || process.env.DEVICE_ID || (process.argv[2] || 'ezpn-742kxmpt');
 
 console.log('='.repeat(65));
 console.log('🌱 ENZOPONIK - SIMULATOR IOT END-TO-END (ESP32 -> CLOUDFLARE WORKER)');
