@@ -86,8 +86,8 @@ export default function Settings() {
   }, [activeSheet]);
 
   // Account Sheet State
-  const [name, setName] = useState(user?.name || 'Farmer MANIK');
-  const [email, setEmail] = useState(user?.email || 'farmer@manik.ai');
+  const [name, setName] = useState(user?.name || 'Farmer Enzoponik');
+  const [email, setEmail] = useState(user?.email || 'farmer@enzoponik.com');
   const [photoUrl, setPhotoUrl] = useState(user?.avatarUrl || AVATAR_PRESETS[0].url);
   const [password, setPassword] = useState(user?.password || '••••••••');
   const [isResetting, setIsResetting] = useState(false);
@@ -224,7 +224,7 @@ export default function Settings() {
           </div>
           <div className="set-profile-card__info">
             <div className="set-profile-card__name-row">
-              <h2 className="set-profile-card__name">{name || 'Farmer MANIK'}</h2>
+              <h2 className="set-profile-card__name">{name || 'Farmer Enzoponik'}</h2>
               <span className={`set-tier-chip ${isPro ? 'set-tier-chip--pro' : 'set-tier-chip--free'}`}>
                 {isPro ? 'PREMIUM' : 'FREE'}
               </span>
@@ -705,7 +705,7 @@ export default function Settings() {
               <button type="button" className="ios-sheet-navbtn" onClick={() => setActiveSheet(null)}>
                 Tutup
               </button>
-              <h3 className="ios-sheet-title">Kuota MANIK AI</h3>
+              <h3 className="ios-sheet-title">Kuota ENZOPONIK AI</h3>
               <div style={{ width: 44 }} />
             </div>
             <div className="ios-sheet-body">

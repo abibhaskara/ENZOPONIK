@@ -252,7 +252,7 @@ export default {
       // 5. Actuator Pump Remote Control
       if (path === '/api/control') {
         if (method === 'GET') {
-          const controlDoc = (await getFirestoreDoc(env, 'device_controls/manik_core')) || {};
+          const controlDoc = (await getFirestoreDoc(env, 'device_controls/enzoponik_core')) || {};
           return json({
             success: true,
             control: {
@@ -274,7 +274,7 @@ export default {
             updatedAt: nowIso,
           };
 
-          await patchFirestoreDoc(env, 'device_controls/manik_core', controlUpdate);
+          await patchFirestoreDoc(env, 'device_controls/enzoponik_core', controlUpdate);
 
           // Update juga live singleton agar UI seketika merespon
           await patchFirestoreDoc(env, 'telemetry/current', {

@@ -38,7 +38,7 @@ function buildSystemContext(sensorData, esp32Data, healthScore, zones, alerts, h
             ? `Siklus sane mamargi: Rahina kaping-${harvestInfo.currentDay}/${harvestInfo.totalCycleDays || 'N/A'}. Estimasi nuju panen optimal: ${harvestInfo.daysToHarvest} rahina.`
             : `Active cycle: Day ${harvestInfo.currentDay}/${harvestInfo.totalCycleDays || 'N/A'}. Estimated days to optimal harvest: ${harvestInfo.daysToHarvest} days.`;
 
-    return `You are MANIK AI, an expert Agronomist and Data Analyst for a smart agriculture facility specialized in cultivating [${cropName}] (Variety: ${cropVariety}).
+    return `You are ENZOPONIK AI, an expert Agronomist and Data Analyst for a smart agriculture facility specialized in cultivating [${cropName}] (Variety: ${cropVariety}).
 Your core directive is to ANALYZE the provided telemetric data, IDENTIFY correlations based on the specific needs of this crop, PREDICT environmental risks, and RECOMMEND actionable interventions.
 
 ### CROP PROFILE & CONTEXT
@@ -227,7 +227,7 @@ export default function AIChatbot() {
                 <div className="ai-chat-header">
                     <div className="ai-chat-header__info">
                         <div>
-                            <div className="ai-chat-header__name">MANIK AI Analyst</div>
+                            <div className="ai-chat-header__name">ENZOPONIK AI Analyst</div>
                             <div className="ai-chat-header__crop-tag" style={{ fontSize: '10px', opacity: 0.8 }}>
                                 {t('monitoring')}: {cropProfile?.cropName || t('general_crop')}
                             </div>

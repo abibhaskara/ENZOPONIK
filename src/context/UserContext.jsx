@@ -4,7 +4,7 @@ import { getUserDevices, claimDevice as claimDeviceService, deleteDevice as dele
 import { doc, setDoc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 
-const STORAGE_KEY = 'manik_user';
+const STORAGE_KEY = 'enzoponik_user';
 
 const DEFAULT_USER = {
   name: '',
@@ -18,7 +18,7 @@ const DEFAULT_USER = {
 
 function loadUser() {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
+    const raw = localStorage.getItem(STORAGE_KEY) || localStorage.getItem('manik_user');
     if (!raw) return DEFAULT_USER;
     const parsed = JSON.parse(raw);
     if ((parsed.activeDeviceId || '').startsWith('MANIK-TOWER')) {

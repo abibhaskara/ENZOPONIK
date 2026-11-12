@@ -1,7 +1,7 @@
-# 🌿 MANIK (Smart Plantation & Hydroponic Monitor)
+# 🌿 ENZOPONIK (Smart Vertical Hydroponic Tower & Plantation Monitor)
 
 <p align="center">
-  <img src="https://res.cloudinary.com/dnbgczi9b/image/upload/v1780760460/logo-trihita_dv2muk.png" alt="MANIK Banner" width="100%" style="border-radius: 20px; box-shadow: 0 8px 30px rgba(12, 94, 74, 0.15); object-fit: cover; max-height: 280px;" />
+  <img src="https://res.cloudinary.com/dnbgczi9b/image/upload/v1780760460/logo-trihita_dv2muk.png" alt="ENZOPONIK Banner" width="100%" style="border-radius: 20px; box-shadow: 0 8px 30px rgba(12, 94, 74, 0.15); object-fit: cover; max-height: 280px;" />
 </p>
 
 <div align="center">
@@ -19,15 +19,15 @@
 
 ## 📖 Overview & Scientific Background
 
-**MANIK** is a premium, mobile-first Web application designed for real-time monitoring and automation of smart plantation and hydroponic farming systems. Built on the philosophical foundation of Balinese *Tri Hita Karana*, the system aims to create ecological balance by combining **IoT Telemetry (ESP32)**, **Google Gemini AI Analytics**, and **Interactive Weather Forecasting**.
+**ENZOPONIK** is a premium, mobile-first Web application designed for real-time monitoring and automation of smart plantation and hydroponic farming systems. Built on the philosophical foundation of Balinese *Tri Hita Karana*, the system aims to create ecological balance by combining **IoT Telemetry (ESP32)**, **Google Gemini AI Analytics**, and **Interactive Weather Forecasting**.
 
 ### 🔬 Context & Ecological Mission
 The escalating volume of municipal organic waste poses a significant threat to Bali's ecological stability, necessitating a transition toward source-level management and sustainable urban agriculture. Rapid urbanization in Denpasar and surrounding agglomerations has overwhelmed centralized waste management systems, notably the over-capacity **Suwung Landfill (TPA Suwung)**, resulting in toxic groundwater contamination, coastal degradation, and hazardous landfill methane fires. 
 
-The MANIK ecosystem provides a scalable solution by synchronizing aerobic composting processes with closed-loop hydroponic irrigation. By converting domestic organic residuals (fruit peels, vegetable scraps, and household bio-waste) into nutrient-rich organic leachate, the system extracts essential minerals (N, P, K) that perform comparably to synthetic fertilizers, containing natural plant growth hormones (auxins, gibberellins, cytokinins) and beneficial microflora that boost tissue regeneration while mitigating carbon emissions.
+The ENZOPONIK ecosystem provides a scalable solution by synchronizing aerobic composting processes with closed-loop hydroponic irrigation. By converting domestic organic residuals (fruit peels, vegetable scraps, and household bio-waste) into nutrient-rich organic leachate, the system extracts essential minerals (N, P, K) that perform comparably to synthetic fertilizers, containing natural plant growth hormones (auxins, gibberellins, cytokinins) and beneficial microflora that boost tissue regeneration while mitigating carbon emissions.
 
 ### ⚡ The Technological Intervention
-The complex environmental balance required for simultaneous composting and hydroponics presents a significant barrier to household adoption. The MANIK system overcomes this through a hybrid IoT and AI framework:
+The complex environmental balance required for simultaneous composting and hydroponics presents a significant barrier to household adoption. The ENZOPONIK system overcomes this through a hybrid IoT and AI framework:
 * **Edge Computing:** An ESP32 microcontroller integrated with DHT11 and soil moisture sensors manages real-time irrigation autonomously with zero-latency logic.
 * **AI Decision-Support System (DSS):** Translates complex telemetry streams into intuitive, actionable agronomic advice for the user using cloud-based AI analytics.
 
@@ -52,7 +52,7 @@ graph TD
 * **Area Charts:** Displays crop parameters over customizable ranges (3 days, 1 week, 1 month).
 
 ### 🤖 Gemini AI Agronomist
-* Built-in expert chatbot (**MANIK AI**) to answer questions.
+* Built-in expert chatbot (**ENZOPONIK AI**) to answer questions.
 * Automatic contextual prompts summarizing live **Soil Moisture, Temperature, Humidity, and UV Index** for high-accuracy agronomist diagnostic reports.
 
 ### 🌦️ Google Weather-Style Forecast
@@ -94,8 +94,8 @@ VITE_API_BASE_URL=
 ### 3. Installation
 ```bash
 # Clone the repository
-git clone https://github.com/username/manik-app.git
-cd manik-app
+git clone https://github.com/abibhaskara/ENZOPONIK.git
+cd ENZOPONIK
 
 # Install dependencies
 npm install
@@ -114,7 +114,7 @@ npm run build
 ## 📐 Architecture
 
 ```
-MANIK APP/
+ENZOPONIK APP/
 ├── src/
 │   ├── components/       # Custom components (AIChatbot, StatCard, SprinklerControl)
 │   ├── context/          # Context states (DataContext, UserContext, LanguageContext)

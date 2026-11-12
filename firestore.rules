@@ -19,7 +19,7 @@ service cloud.firestore {
     //   - lastLoginAt: timestamp
     //
     // Collection: devices/{deviceId}
-    // Document ID: Physical hardware identifier (e.g., 'MANIK-TOWER-01')
+    // Document ID: Physical hardware identifier (e.g., 'ezpn-742kxmpt')
     // Fields:
     //   - deviceId: string
     //   - ownerUid: string

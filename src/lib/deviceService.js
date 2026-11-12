@@ -1,5 +1,5 @@
 /**
- * MANIK - Multi-Device IoT Data Engineering Service
+ * ENZOPONIK - Multi-Device IoT Data Engineering Service
  * Manages device registry, quota enforcement (Freemium 1 vs Pro Multi-device),
  * real-time telemetry subscriptions, and daily snapshots with retention TTL (30 days vs 12 months).
  */
@@ -56,7 +56,7 @@ export async function getUserDevices(uid) {
 /**
  * Claim and register a new device to a user account with Freemium Quota Check
  * @param {string} uid - Owner's UID
- * @param {string} deviceId - Physical Device Identifier (e.g., 'MANIK-TOWER-01')
+ * @param {string} deviceId - Physical Device Identifier (e.g., 'ezpn-742kxmpt')
  * @param {string} customName - Optional user-assigned label
  * @param {string} userTier - 'free' | 'pro'
  */

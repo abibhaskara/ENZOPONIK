@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import './SplashScreen.css';
 
-const SPLASH_STORAGE_KEY = 'manik_splash_shown';
+const SPLASH_STORAGE_KEY = 'enzoponik_splash_shown';
 
 export default function SplashScreen({ onDone }) {
   const [isFading, setIsFading] = useState(false);
@@ -31,12 +31,12 @@ export default function SplashScreen({ onDone }) {
   }, [onDone]);
 
   return (
-    <div className={`splash ${isFading ? 'splash--fading' : ''}`} aria-label="MANIK loading">
+    <div className={`splash ${isFading ? 'splash--fading' : ''}`} aria-label="ENZOPONIK loading">
       <div className="splash__logo-wrap">
         <div className="splash__logo-scale">
           <img
             src="/favicon.png"
-            alt="MANIK"
+            alt="ENZOPONIK"
             className="splash__logo-img"
             draggable={false}
           />

@@ -1,6 +1,6 @@
 /**
- * MANIK - Agronomy AI Service Layer
- * Centralizes prompt engineering, context aggregation, and AI execution for MANIK.
+ * ENZOPONIK - Agronomy AI Service Layer
+ * Centralizes prompt engineering, context aggregation, and AI execution for ENZOPONIK.
  */
 import { executeWithGeminiFallback, parseGeminiError } from './geminiUtils';
 
@@ -76,7 +76,7 @@ export async function runDashboardAnalysis({
         ? 'Basa Bali (Balinese)'
         : 'English';
 
-    const prompt = `You are MANIK AI agronomist. Analyze this hydroponic system:
+    const prompt = `You are ENZOPONIK AI agronomist. Analyze this hydroponic system:
 ${context}
 - Active Alerts: ${activeAlerts}
 
@@ -128,7 +128,7 @@ export async function runTopicInsight({
         ? 'Basa Bali (Balinese)'
         : 'English';
 
-    const prompt = `You are MANIK AI agronomist. Write a concise 2-sentence insight about "${topic}" based on this data:
+    const prompt = `You are ENZOPONIK AI agronomist. Write a concise 2-sentence insight about "${topic}" based on this data:
 ${context}
 
 Respond with ONLY the 2-sentence insight, no extra headers or markdown formatting.

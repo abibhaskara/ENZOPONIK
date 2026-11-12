@@ -310,7 +310,7 @@ export default function Dashboard() {
           
           <div className="db-hero__titles">
             <p className="db-hero__greeting">{t('welcome_to')}</p>
-            <h1 className="db-hero__name">MANIK</h1>
+            <h1 className="db-hero__name">ENZOPONIK</h1>
           </div>
 
           

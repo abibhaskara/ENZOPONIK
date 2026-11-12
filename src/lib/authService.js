@@ -1,5 +1,5 @@
 /**
- * MANIK - Firebase Authentication Service
+ * ENZOPONIK - Firebase Authentication Service
  * Handles Google OAuth, user profile sync, and session management.
  */
 import {
@@ -33,7 +33,7 @@ export async function signInWithGoogle() {
 
     let profileData = {
       uid: user.uid,
-      displayName: user.displayName || 'Farmer MANIK',
+      displayName: user.displayName || 'Farmer Enzoponik',
       email: user.email,
       photoURL: user.photoURL,
       lastLoginAt: serverTimestamp(),

@@ -157,8 +157,8 @@ export const translations = {
     enter_your_name: 'Enter your name',
 
 
-    ask_ai: 'Ask MANIK AI...',
-    ai_greeting: 'Hello! I am MANIK AI. How can I help you optimize your hydroponic system today?',
+    ask_ai: 'Ask ENZOPONIK AI...',
+    ai_greeting: 'Hello! I am ENZOPONIK AI. How can I help you optimize your hydroponic system today?',
     type_message: 'Type a message...',
     data_analysis_engine: 'Data Analysis Engine',
     monitoring_telemetry: 'I am monitoring the live telemetry of your hydroponic system. Ask me to analyze health, water levels, yield projections, or environmental risks.',
@@ -191,7 +191,7 @@ export const translations = {
     sprinkler_irrigation: 'Sprinkler Irrigation',
     manual_irrigation: 'Manual / Rain-dependent',
     rainfed_irrigation: 'Rainfed',
-    onboarding_title: 'Welcome to MANIK',
+    onboarding_title: 'Welcome to ENZOPONIK',
     onboarding_subtitle: 'Setup your crop profile to customize the smart monitoring system.',
     step: 'Step',
     use_standard_ai: 'Use AI Defaults',
@@ -356,8 +356,8 @@ export const translations = {
     enter_your_name: 'Masukkan nama Anda',
 
 
-    ask_ai: 'Tanya MANIK AI...',
-    ai_greeting: 'Halo! Saya MANIK AI. Bagaimana saya dapat membantu mengoptimalkan sistem hidroponik Anda hari ini?',
+    ask_ai: 'Tanya ENZOPONIK AI...',
+    ai_greeting: 'Halo! Saya ENZOPONIK AI. Bagaimana saya dapat membantu mengoptimalkan sistem hidroponik Anda hari ini?',
     type_message: 'Ketik pesan...',
     data_analysis_engine: 'Mesin Analisis Data',
     monitoring_telemetry: 'Saya memantau telemetri langsung sistem hidroponik Anda. Tanyakan tentang kesehatan, kadar air, proyeksi hasil, atau risiko lingkungan.',
@@ -390,7 +390,7 @@ export const translations = {
     sprinkler_irrigation: 'Curah/Sprinkler',
     manual_irrigation: 'Manual / Tergantung Hujan',
     rainfed_irrigation: 'Tadah Hujan',
-    onboarding_title: 'Selamat Datang di MANIK',
+    onboarding_title: 'Selamat Datang di ENZOPONIK',
     onboarding_subtitle: 'Atur profil tanaman Anda untuk menyesuaikan sistem pemantauan cerdas.',
     step: 'Langkah',
     use_standard_ai: 'Gunakan Standar AI',
@@ -555,8 +555,8 @@ export const translations = {
     enter_your_name: 'Lebokang adan Palungguh',
 
 
-    ask_ai: 'Takonang ring MANIK AI...',
-    ai_greeting: 'Om Swastyastu! Tiang MANIK AI. Sapunapi tiang prasida ngwantu ngoptimalang sistem hidroponik Palungguh rahina mangkin?',
+    ask_ai: 'Takonang ring ENZOPONIK AI...',
+    ai_greeting: 'Om Swastyastu! Tiang ENZOPONIK AI. Sapunapi tiang prasida ngwantu ngoptimalang sistem hidroponik Palungguh rahina mangkin?',
     type_message: 'Ketik pawos...',
     data_analysis_engine: 'Mesin Analisis Data',
     monitoring_telemetry: 'Tiang mantau telemetri langsung sistem hidroponik Palungguh. Takonang indik kasehatan, kadar yeh, proyeksi hasil, utawi risiko lingkungan.',
@@ -589,7 +589,7 @@ export const translations = {
     sprinkler_irrigation: 'Curah/Sprinkler',
     manual_irrigation: 'Manual / Saking Ujan',
     rainfed_irrigation: 'Tadah Ujan',
-    onboarding_title: 'Rahajeng Rauh ring MANIK',
+    onboarding_title: 'Rahajeng Rauh ring ENZOPONIK',
     onboarding_subtitle: 'Setel profil taneman Palungguh kangge nyesuaiang pemantauan lantip.',
     step: 'Langkah',
     use_standard_ai: 'Anggen Standar AI',

@@ -3,7 +3,7 @@ import { LANGUAGES, translations } from '../locales/translations';
 
 export { LANGUAGES };
 
-const LANG_KEY = 'manik_lang';
+const LANG_KEY = 'enzoponik_lang';
 
 const LanguageContext = createContext(null);
 

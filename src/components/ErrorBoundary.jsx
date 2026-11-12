@@ -27,7 +27,7 @@ export default class ErrorBoundary extends React.Component {
           overflow: 'auto',
           boxSizing: 'border-box'
         }}>
-          <h1 style={{ color: '#ef4444', fontSize: '20px', marginBottom: '12px' }}>[MANIK] Render Crash Caught</h1>
+          <h1 style={{ color: '#ef4444', fontSize: '20px', marginBottom: '12px' }}>[ENZOPONIK] Render Crash Caught</h1>
           <p style={{ fontWeight: 'bold', color: '#f59e0b', marginBottom: '16px' }}>
             {this.state.error && this.state.error.toString()}
           </p>

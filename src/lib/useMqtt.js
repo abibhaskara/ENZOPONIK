@@ -5,8 +5,8 @@ import mqtt from 'mqtt';
 const BROKER_URL = import.meta.env.VITE_MQTT_BROKER_URL || 'wss://broker.hivemq.com:8884/mqtt';
 
 const TOPICS = {
-  temperature: import.meta.env.VITE_MQTT_TOPIC_TEMP || 'manik/esp32/temp_secret99',
-  humidity: import.meta.env.VITE_MQTT_TOPIC_HUM || 'manik/esp32/hum_secret99',
+  temperature: import.meta.env.VITE_MQTT_TOPIC_TEMP || 'enzoponik/esp32/temp_secret99',
+  humidity: import.meta.env.VITE_MQTT_TOPIC_HUM || 'enzoponik/esp32/hum_secret99',
 };
 
 
@@ -43,7 +43,7 @@ export function useMqtt() {
   }, [markDeviceOffline]);
 
   useEffect(() => {
-    const clientId = `manik_webapp_${Math.random().toString(16).slice(2, 8)}`;
+    const clientId = `enzoponik_webapp_${Math.random().toString(16).slice(2, 8)}`;
 
     const mqttClient = mqtt.connect(BROKER_URL, {
       clientId,

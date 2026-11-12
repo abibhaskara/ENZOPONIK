@@ -100,7 +100,7 @@ function AppShell() {
 export default function App() {
   const [showSplash, setShowSplash] = useState(() => {
     try {
-      return !sessionStorage.getItem('manik_splash_shown');
+      return !sessionStorage.getItem('enzoponik_splash_shown');
     } catch {
       return false;
     }

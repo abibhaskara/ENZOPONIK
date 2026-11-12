@@ -1,5 +1,5 @@
 /**
- * MANIK - Firebase Firestore Service Layer
+ * ENZOPONIK - Firebase Firestore Service Layer
  * Provides real-time synchronization, telemetry persistence, alerts, and remote device control.
  */
 import {
@@ -19,7 +19,7 @@ import { db, isFirebaseConfigured } from './firebase';
 const TELEMETRY_COLLECTION = 'telemetry_history';
 const LIVE_TELEMETRY_DOC = 'telemetry/current';
 const ALERTS_COLLECTION = 'alerts';
-const CONTROLS_DOC = 'device_controls/manik_core';
+const CONTROLS_DOC = 'device_controls/enzoponik_core';
 
 /**
  * Real-time listener for current sensor telemetry
@@ -165,7 +165,7 @@ export async function updateDeviceControl(command) {
   }
 
   try {
-    const controlRef = doc(db, 'device_controls', 'manik_core');
+    const controlRef = doc(db, 'device_controls', 'enzoponik_core');
     await setDoc(controlRef, { ...command, updatedAt: serverTimestamp() }, { merge: true });
   } catch (err) {
     console.error('[Firebase] Failed to send control command:', err.message);

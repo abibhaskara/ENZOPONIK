@@ -23,7 +23,7 @@ import {
 
 const DataContext = createContext(null);
 
-const LOCATION_KEY = 'manik_location_config';
+const LOCATION_KEY = 'enzoponik_location_config';
 
 const DEFAULT_LOCATION = {
   isLocked: false,
@@ -74,7 +74,7 @@ export function DataProvider({ children }) {
 
   const [alerts, setAlerts] = useState(() => {
     try {
-      const stored = localStorage.getItem('manik_alerts');
+      const stored = localStorage.getItem('enzoponik_alerts');
       return stored ? JSON.parse(stored) : [];
     } catch {
       return [];
@@ -140,7 +140,7 @@ export function DataProvider({ children }) {
   useEffect(() => {
     if (!activeDeviceId) return;
     const today = new Date().toISOString().slice(0, 10);
-    const markerKey = `manik_snapshot_${activeDeviceId}_${today}`;
+    const markerKey = `enzoponik_snapshot_${activeDeviceId}_${today}`;
     if (localStorage.getItem(markerKey)) return;
 
     const timer = setTimeout(() => {
@@ -180,13 +180,13 @@ export function DataProvider({ children }) {
       }
 
       if (!backendConnectedRef.current) {
-        console.info(`[MANIK API] Connected — ${data.length} node(s) online`);
+        console.info(`[ENZOPONIK API] Connected — ${data.length} node(s) online`);
         backendConnectedRef.current = true;
         setBackendConnected(true);
       }
     } catch (err) {
       if (backendConnectedRef.current) {
-        console.warn('[MANIK API] Backend unreachable:', err.message);
+        console.warn('[ENZOPONIK API] Backend unreachable:', err.message);
         backendConnectedRef.current = false;
         setBackendConnected(false);
       }
@@ -364,7 +364,7 @@ export function DataProvider({ children }) {
         type_key: typeKey,
         type: isHigh && typeKey !== 'temp' ? 'warning' : 'danger',
         title,
-        zone: 'MANIK 1',
+        zone: 'ENZOPONIK 1',
         timestamp: now,
         read: false,
       });
@@ -391,7 +391,7 @@ export function DataProvider({ children }) {
     if (newAlerts.length > 0) {
       setAlerts(prev => {
         const next = [...newAlerts, ...prev].slice(0, 20);
-        try { localStorage.setItem('manik_alerts', JSON.stringify(next)); }
+        try { localStorage.setItem('enzoponik_alerts', JSON.stringify(next)); }
         catch (e) { console.warn('[Storage] failed to save alerts:', e.message); }
         return next;
       });
@@ -405,7 +405,7 @@ export function DataProvider({ children }) {
 
   
   const persistAlerts = (next) => {
-    try { localStorage.setItem('manik_alerts', JSON.stringify(next)); }
+    try { localStorage.setItem('enzoponik_alerts', JSON.stringify(next)); }
     catch (e) { console.warn('[Storage] failed to save alerts:', e.message); }
     return next;
   };

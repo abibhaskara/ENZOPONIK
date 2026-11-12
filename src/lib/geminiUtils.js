@@ -1,5 +1,5 @@
 /**
- * MANIK - Multi-Tier Gemini AI REST Client with Dual-Engine Fallback
+ * ENZOPONIK - Multi-Tier Gemini AI REST Client with Dual-Engine Fallback
  * Layer 1: Direct Google Generative Language REST (Candidate models: gemini-3.5-flash -> gemini-3.8-flash -> gemini-flash-latest)
  * Layer 2: Cloudflare Edge Worker Proxy (/api/ai/analyze)
  */
@@ -179,7 +179,7 @@ export async function executeWithGeminiFallback(modelConfig = {}, executeFn) {
             msg.includes('api key not valid');
 
           if (isTransient) {
-            console.warn(`[MANIK AI] Model ${modelName} (key #${k + 1}) failed (${msg}). Trying fallback...`);
+            console.warn(`[ENZOPONIK AI] Model ${modelName} (key #${k + 1}) failed (${msg}). Trying fallback...`);
             continue;
           }
           break;
@@ -189,7 +189,7 @@ export async function executeWithGeminiFallback(modelConfig = {}, executeFn) {
   }
 
   // Layer 2: Cloudflare Edge Worker Proxy Fallback
-  console.info('[MANIK AI] Activating Cloudflare Edge Worker AI proxy fallback...');
+  console.info('[ENZOPONIK AI] Activating Cloudflare Edge Worker AI proxy fallback...');
   try {
     const edgeProxy = {
       generateContent: async (prompt) => {
@@ -228,7 +228,7 @@ export async function executeWithGeminiFallback(modelConfig = {}, executeFn) {
 
     return await executeFn(edgeProxy);
   } catch (proxyErr) {
-    console.error('[MANIK AI] Edge AI proxy also failed:', proxyErr);
+    console.error('[ENZOPONIK AI] Edge AI proxy also failed:', proxyErr);
     throw lastErr || proxyErr;
   }
 }
