@@ -159,23 +159,29 @@ export function DataProvider({ children }) {
 
 
   
+  const [detectedNodeId, setDetectedNodeId] = useState(null);
+
   const fetchSensorData = useCallback(async () => {
     try {
-      const data = await getLatestObservations();
+      const data = await getLatestObservations(activeDeviceId);
       if (!Array.isArray(data) || data.length === 0) return;
 
-      const targetNodeId = import.meta.env.VITE_TARGET_NODE_ID || 'b37eae24f4f1a39d49cd64a0a2c3430e';
-      const node = data.find(n =>
-        n.node_id === targetNodeId || n.node === targetNodeId || n.id === targetNodeId
-      ) || data[0];
+      const cleanActiveId = (activeDeviceId || '').trim().toUpperCase();
+      const node = data.find(n => {
+        const id = (n.node_id || n.deviceId || n.node || n.id || '').toUpperCase();
+        return cleanActiveId && id === cleanActiveId;
+      }) || data[0];
 
       if (node) {
+        const nodeId = (node.node_id || node.deviceId || node.node || node.id || '').toUpperCase();
+        if (nodeId) setDetectedNodeId(nodeId);
+
         setSensorData(prev => ({
           ...prev,
-          soilMoisture: node.soilMoisture != null ? parseFloat(node.soilMoisture.toFixed(1)) : prev.soilMoisture,
-          lightLevel:   node.lightLevel   != null ? parseFloat(node.lightLevel.toFixed(1))   : prev.lightLevel,
-          temperature:  node.temperature  != null ? parseFloat(node.temperature.toFixed(1))  : prev.temperature,
-          humidity:     node.humidity     != null ? parseFloat(node.humidity.toFixed(1))     : prev.humidity,
+          soilMoisture: node.soilMoisture != null ? parseFloat(Number(node.soilMoisture).toFixed(1)) : prev.soilMoisture,
+          lightLevel:   node.lightLevel   != null ? parseFloat(Number(node.lightLevel).toFixed(1))   : prev.lightLevel,
+          temperature:  node.temperature  != null ? parseFloat(Number(node.temperature).toFixed(1))  : prev.temperature,
+          humidity:     node.humidity     != null ? parseFloat(Number(node.humidity).toFixed(1))     : prev.humidity,
         }));
       }
 
@@ -191,7 +197,7 @@ export function DataProvider({ children }) {
         setBackendConnected(false);
       }
     }
-  }, []);
+  }, [activeDeviceId]);
 
   useEffect(() => {
     fetchSensorData();
@@ -311,7 +317,7 @@ export function DataProvider({ children }) {
   
   const { cropProfile } = useUser();
 
-  const effectiveEsp32Connected = esp32Connected || firebaseConnected;
+  const effectiveEsp32Connected = esp32Connected || firebaseConnected || backendConnected;
   const effectiveBackendConnected = backendConnected || firebaseConnected;
   const effectiveEsp32Data = esp32Data;
 
@@ -438,6 +444,7 @@ export function DataProvider({ children }) {
       esp32Data: effectiveEsp32Data,
       esp32Connected: effectiveEsp32Connected,
       esp32Error,
+      detectedNodeId,
       locationConfig, updateLocationConfig,
     }}>
       {children}

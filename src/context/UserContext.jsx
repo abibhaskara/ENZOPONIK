@@ -7,12 +7,12 @@ import { db } from '../lib/firebase';
 const STORAGE_KEY = 'enzoponik_user';
 
 const DEFAULT_USER = {
-  name: '',
+  name: 'Petani Enzoponik',
   email: '',
   avatarUrl: 'https://api.dicebear.com/9.x/thumbs/svg?seed=Sophie',
-  onboarded: false,
+  onboarded: true,
   subscriptionTier: 'free', // 'free' (1 device, 30 days) | 'pro' (multi-device, 365 days)
-  activeDeviceId: '',
+  activeDeviceId: 'EZPN-396QQVMZ',
   cropProfile: null,
 };
 
@@ -21,11 +21,11 @@ function loadUser() {
     const raw = localStorage.getItem(STORAGE_KEY) || localStorage.getItem('manik_user');
     if (!raw) return DEFAULT_USER;
     const parsed = JSON.parse(raw);
-    if ((parsed.activeDeviceId || '').startsWith('MANIK-TOWER')) {
-      parsed.activeDeviceId = '';
+    if ((parsed.activeDeviceId || '').startsWith('MANIK-TOWER') || !parsed.activeDeviceId) {
+      parsed.activeDeviceId = 'EZPN-396QQVMZ';
     }
     // Clean out any legacy mock Tomato profile or unlinked profile
-    if (parsed.cropProfile && (parsed.cropProfile.cropName === 'Tomato' || !parsed.activeDeviceId)) {
+    if (parsed.cropProfile && parsed.cropProfile.cropName === 'Tomato') {
       parsed.cropProfile = null;
     }
     return parsed;
@@ -43,7 +43,16 @@ const UserContext = createContext(null);
 export function UserProvider({ children }) {
   const [user, setUser] = useState(() => loadUser());
   const [googleUser, setGoogleUser] = useState(null);
-  const [devices, setDevices] = useState([]);
+  const [devices, setDevices] = useState(() => {
+    try {
+      const stored = localStorage.getItem('enzoponik_devices');
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch {}
+    return [{ id: 'EZPN-396QQVMZ', deviceId: 'EZPN-396QQVMZ', name: 'Menara ENZOPONIK 1', status: 'online' }];
+  });
   const [loadingAuth, setLoadingAuth] = useState(true);
 
   // Sync with Firebase Auth
@@ -161,15 +170,34 @@ export function UserProvider({ children }) {
     }
   }, [user?.uid]);
 
-  // Add / Claim a new IoT device (enforces Freemium limits)
+  // Add / Claim a new IoT device (enforces Freemium limits with local fallback)
   const addDevice = useCallback(async (deviceId, customName) => {
+    const cleanId = (deviceId || '').trim().toUpperCase();
+    if (!cleanId) throw new Error('Device ID tidak valid.');
+
     const uid = user?.uid || 'offline_user';
     const tier = user?.subscriptionTier || 'free';
 
-    // Claim device with quota validation
-    const claimed = await claimDeviceService(uid, deviceId, customName, tier);
-    setDevices(prev => [...prev.filter(d => d.id !== claimed.id), claimed]);
-    await selectActiveDevice(claimed.id);
+    let claimed = {
+      id: cleanId,
+      deviceId: cleanId,
+      name: customName || `Menara ${cleanId}`,
+      status: 'online',
+    };
+
+    try {
+      const cloudClaimed = await claimDeviceService(uid, cleanId, customName, tier);
+      if (cloudClaimed) claimed = cloudClaimed;
+    } catch (e) {
+      console.warn('[UserContext] Cloud claim fallback to local device:', e.message);
+    }
+
+    setDevices(prev => {
+      const next = [...prev.filter(d => (d.id || d.deviceId) !== cleanId), claimed];
+      try { localStorage.setItem('enzoponik_devices', JSON.stringify(next)); } catch {}
+      return next;
+    });
+    await selectActiveDevice(cleanId);
     return claimed;
   }, [user?.uid, user?.subscriptionTier, selectActiveDevice]);
 

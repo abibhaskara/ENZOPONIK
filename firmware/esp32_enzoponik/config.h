@@ -18,8 +18,8 @@
 // =========================================================================
 // 2. KREDENSIAL WI-FI (Ganti dengan nama & password Wi-Fi Anda)
 // =========================================================================
-#define WIFI_SSID             "NAMA_WIFI_ANDA"
-#define WIFI_PASSWORD         "PASSWORD_WIFI_ANDA"
+#define WIFI_SSID             "MULIA HOUSE"
+#define WIFI_PASSWORD         "@Mulia88"
 #define WIFI_CONNECT_TIMEOUT  25000 // 25 detik batas tunggu koneksi Wi-Fi
 
 // =========================================================================
@@ -50,8 +50,8 @@
 // Interval jeda wajib setelah menyiram sebelum pompa boleh dinyalakan lagi (2 menit)
 #define PUMP_COOLDOWN_SEC     120
 
-// Interval rutin pengiriman data sensor ke cloud (15 detik)
-#define TELEMETRY_INTERVAL_MS 15000
+// Interval rutin pengiriman data sensor ke cloud (5 detik agar respon klik cepat)
+#define TELEMETRY_INTERVAL_MS 5000
 
 // =========================================================================
 // 6. NILAI KALIBRASI DEFAULT SENSOR TANAH (ADC)

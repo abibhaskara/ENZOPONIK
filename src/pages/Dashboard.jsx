@@ -13,6 +13,7 @@ import { useLang } from '../context/LanguageContext';
 import { runDashboardAnalysis } from '../lib/agronomyService';
 import { getDeviceDailySnapshots } from '../lib/deviceService';
 import { subscribeToTelemetryHistory } from '../lib/firebaseService';
+import { triggerPumpControl } from '../lib/api';
 import DeviceScannerModal from '../components/DeviceScannerModal';
 import './Dashboard.css';
 import hydroImg from '../assets/hydroponic.jpg';
@@ -35,7 +36,7 @@ function getHealthColor(score) {
 export default function Dashboard() {
   const {
     realWeather, sensorData, alerts, markAlertRead,
-    esp32Connected, esp32Data, healthScore, backendConnected,
+    esp32Connected, esp32Data, healthScore, backendConnected, detectedNodeId,
   } = useData();
   const {
     user, harvestInfo, cropProfile, activeDeviceId,
@@ -58,16 +59,37 @@ export default function Dashboard() {
   const [customTo,   setCustomTo]   = useState('');
   const [deviceSnapshots, setDeviceSnapshots] = useState([]);
   const [telemetryHistory, setTelemetryHistory] = useState([]);
+  const [pumpTriggering, setPumpTriggering] = useState(false);
+  const [pumpStatusMsg, setPumpStatusMsg] = useState(null);
 
-  // Fetch real device snapshots if activeDeviceId is present
+  const handleTestRelay = useCallback(async () => {
+    if (pumpTriggering) return;
+    setPumpTriggering(true);
+    setPumpStatusMsg('Mengirim sinyal KLIK ke ESP32...');
+    try {
+      await triggerPumpControl(true, 5);
+      setPumpStatusMsg('Sinyal terkirim! Relay menyala 5 detik (KLIK!)');
+      setTimeout(() => {
+        setPumpTriggering(false);
+        setPumpStatusMsg(null);
+      }, 6000);
+    } catch (err) {
+      setPumpStatusMsg('Gagal mengirim sinyal: ' + err.message);
+      setPumpTriggering(false);
+    }
+  }, [pumpTriggering]);
+
+  const effectiveDeviceId = activeDeviceId || detectedNodeId || (devices && devices[0]?.id) || 'EZPN-396QQVMZ';
+
+  // Fetch real device snapshots if effectiveDeviceId is present
   useEffect(() => {
     let isMounted = true;
-    if (!activeDeviceId) {
+    if (!effectiveDeviceId) {
       setDeviceSnapshots([]);
       return;
     }
 
-    getDeviceDailySnapshots(activeDeviceId, 30).then((snapshots) => {
+    getDeviceDailySnapshots(effectiveDeviceId, 30).then((snapshots) => {
       if (isMounted) {
         setDeviceSnapshots(snapshots || []);
       }
@@ -76,7 +98,7 @@ export default function Dashboard() {
     return () => {
       isMounted = false;
     };
-  }, [activeDeviceId]);
+  }, [effectiveDeviceId]);
 
   // Subscribe to live telemetry history collection from Firestore
   useEffect(() => {
@@ -90,13 +112,12 @@ export default function Dashboard() {
   }, []);
 
   const activeDevice = useMemo(() => {
-    return devices?.find(d => d.id === activeDeviceId) || null;
-  }, [devices, activeDeviceId]);
+    return devices?.find(d => d.id === effectiveDeviceId) || { id: effectiveDeviceId, name: `Menara ${effectiveDeviceId}` };
+  }, [devices, effectiveDeviceId]);
 
-  const hasDevice = Boolean(activeDeviceId && devices && devices.length > 0);
+  const hasDevice = Boolean(effectiveDeviceId || backendConnected || esp32Connected);
 
-  
-  const isOnline    = backendConnected || esp32Connected;
+  const isOnline = backendConnected || esp32Connected;
   const unreadCount = useMemo(() => alerts.filter(a => !a.read).length, [alerts]);
 
   useEffect(() => {
@@ -178,9 +199,9 @@ export default function Dashboard() {
   const sensors = useMemo(() => [
     {
       icon: Droplets, label: t('soil'),
-      value: fmt(esp32Connected ? sensorData.soilMoisture : null, '%', 0),
-      unit: '%', rawVal: esp32Connected ? sensorData.soilMoisture : null,
-      ok: esp32Connected && sensorData.soilMoisture >= 60 && sensorData.soilMoisture <= 80,
+      value: fmt(sensorData.soilMoisture, '%', 0),
+      unit: '%', rawVal: sensorData.soilMoisture,
+      ok: sensorData.soilMoisture != null && sensorData.soilMoisture >= 60 && sensorData.soilMoisture <= 80,
     },
     {
       icon: Leaf, label: t('health'),
@@ -213,7 +234,7 @@ export default function Dashboard() {
       unit: 'km/h', rawVal: weatherWind,
       ok: weatherWind != null,
     },
-  ], [t, esp32Connected, sensorData, healthScore, weatherUV, displayTemp, displayHumidity, weatherWind]);
+  ], [t, sensorData, healthScore, weatherUV, displayTemp, displayHumidity, weatherWind]);
 
   
   const runAnalysis = useCallback(async () => {
@@ -352,13 +373,11 @@ export default function Dashboard() {
             <img src={enzoponikImg} alt="Enzoponik" className="db-field-btn__thumb" />
             <div className="db-field-btn__info">
               <span className="db-field-btn__name">
-                {hasDevice ? (activeDevice?.name || cropProfile?.cropName || t('field_name')) : 'Add New Device'}
+                {activeDevice?.name || (cropProfile?.cropName ? `${cropProfile.cropName} (${effectiveDeviceId})` : `Menara ${effectiveDeviceId}`)}
               </span>
-              {hasDevice && (
-                <span className="db-field-btn__desc">
-                  {activeDevice ? `ID: ${activeDevice.id}` : t('field_desc')}
-                </span>
-              )}
+              <span className="db-field-btn__desc">
+                {`ID: ${activeDevice?.id || effectiveDeviceId}`}
+              </span>
             </div>
             {hasDevice ? (
               <ChevronDown size={18} className={`db-field-btn__chev ${dropdownOpen ? 'db-field-btn__chev--open' : ''}`} />
@@ -485,6 +504,37 @@ export default function Dashboard() {
                 </div>
               );
             })}
+          </div>
+          <div style={{ padding: '0 14px 14px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+            <button
+              type="button"
+              onClick={handleTestRelay}
+              disabled={pumpTriggering}
+              style={{
+                width: '100%',
+                padding: '10px 14px',
+                borderRadius: '12px',
+                border: 'none',
+                background: pumpTriggering ? '#059669' : '#10b981',
+                color: '#fff',
+                fontWeight: 600,
+                fontSize: '13px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px',
+                cursor: pumpTriggering ? 'wait' : 'pointer',
+                boxShadow: '0 2px 8px rgba(16, 185, 129, 0.28)',
+              }}
+            >
+              <Droplets size={15} />
+              <span>{pumpTriggering ? 'Relay Aktif (5 Detik)...' : 'Tes Klik Relay / Nyalakan Pompa (5s)'}</span>
+            </button>
+            {pumpStatusMsg && (
+              <span style={{ fontSize: '11.5px', color: '#059669', textAlign: 'center', fontWeight: 500 }}>
+                {pumpStatusMsg}
+              </span>
+            )}
           </div>
         </div>
 

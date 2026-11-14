@@ -1,5 +1,5 @@
-#ifndef NETWORK_H
-#define NETWORK_H
+#ifndef EZPN_NETWORK_H
+#define EZPN_NETWORK_H
 
 #include <Arduino.h>
 #include <WiFi.h>
@@ -14,12 +14,12 @@ struct CloudResponse {
   String command;
 };
 
-class NetworkManager {
+class EzpnNetwork {
 private:
   unsigned long _lastWifiCheck;
 
 public:
-  NetworkManager() : _lastWifiCheck(0) {}
+  EzpnNetwork() : _lastWifiCheck(0) {}
 
   void connectWiFi() {
     Serial.println();
@@ -112,23 +112,28 @@ public:
 
       res.success = true;
 
-      // Parsing respons ringan tanpa ketergantungan library eksternal
-      if (responseBody.indexOf("\"command\":\"RUN_PUMP\"") > 0 ||
-          responseBody.indexOf("\"pumpActive\":true") > 0) {
+      // Parsing respons ringan (tahan terhadap spasi / pretty-print JSON)
+      if (responseBody.indexOf("RUN_PUMP") >= 0 ||
+          responseBody.indexOf("\"pumpActive\": true") >= 0 ||
+          responseBody.indexOf("\"pumpActive\":true") >= 0) {
         res.shouldRunPump = true;
         res.command = "RUN_PUMP";
 
-        // Ekstrak durasi pompa (contoh: "pumpDurationSec":15)
-        int durIdx = responseBody.indexOf("\"pumpDurationSec\":");
-        if (durIdx > 0) {
-          int startIdx = durIdx + 18;
-          int endIdx = responseBody.indexOf(",", startIdx);
-          if (endIdx < 0) endIdx = responseBody.indexOf("}", startIdx);
-          if (endIdx > startIdx) {
-            res.pumpDurationSec = responseBody.substring(startIdx, endIdx).toInt();
+        // Ekstrak durasi pompa (contoh: "pumpDurationSec": 15 atau "pumpDurationSec":15)
+        int durIdx = responseBody.indexOf("\"pumpDurationSec\"");
+        if (durIdx >= 0) {
+          int colonIdx = responseBody.indexOf(":", durIdx);
+          if (colonIdx > 0) {
+            int endIdx = responseBody.indexOf(",", colonIdx);
+            if (endIdx < 0) endIdx = responseBody.indexOf("}", colonIdx);
+            if (endIdx > colonIdx) {
+              String numStr = responseBody.substring(colonIdx + 1, endIdx);
+              numStr.trim();
+              res.pumpDurationSec = numStr.toInt();
+            }
           }
         }
-        if (res.pumpDurationSec <= 0) res.pumpDurationSec = 15;
+        if (res.pumpDurationSec <= 0) res.pumpDurationSec = 10;
       } else {
         res.shouldRunPump = false;
         res.command = "STOP_PUMP";

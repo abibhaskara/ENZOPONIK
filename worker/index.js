@@ -159,13 +159,25 @@ export default {
 
         const nowIso = new Date().toISOString();
 
-        // Cerdas: Evaluasi kondisi pompa air otomatis
-        // - Kelembaban < 50% -> Pompa nyala (15 detik)
-        // - Kelembaban >= 80% -> Pompa mati
+        // Cek apakah ada perintah manual dari Web Dashboard / Settings
+        const controlDoc = await getFirestoreDoc(env, 'device_controls/enzoponik_core').catch(() => null);
+        const manualTrigger = Boolean(controlDoc && (controlDoc.pumpActive || controlDoc.flushActive));
+
+        // Cerdas: Evaluasi kondisi pompa air otomatis atau manual override
         let pumpActive = Boolean(payload.pumpActive);
         let pumpDurationSec = Number(payload.pumpDurationSec || 0);
 
-        if (rawMoisture <= 50) {
+        if (manualTrigger) {
+          pumpActive = true;
+          pumpDurationSec = Number(controlDoc.pumpDurationSec || 5);
+          // Reset flag manual trigger setelah diambil oleh ESP32
+          await patchFirestoreDoc(env, 'device_controls/enzoponik_core', {
+            pumpActive: false,
+            flushActive: false,
+            pumpDurationSec: 0,
+            updatedAt: nowIso,
+          }).catch(() => null);
+        } else if (rawMoisture <= 50) {
           pumpActive = true;
           pumpDurationSec = 15;
         } else if (rawMoisture >= 80) {

@@ -12,12 +12,12 @@
 #include "config.h"
 #include "sensor.h"
 #include "pump.h"
-#include "network.h"
+#include "ezpn_network.h"
 
 // Inisialisasi Objek Hardware & Layanan
 SoilSensor      sensor(PIN_SOIL_SENSOR, ADC_DRY_DEFAULT, ADC_WET_DEFAULT);
 WaterPump       pump(PIN_PUMP_RELAY, RELAY_ACTIVE_LOW);
-NetworkManager  network;
+EzpnNetwork     network;
 
 // Pelacak Waktu & Identitas Hardware
 String        activeDeviceId      = "";
@@ -122,10 +122,20 @@ void setup() {
 
   printSystemBanner();
 
-  // 1. Inisialisasi Relay Pompa Air (Memastikan pin aman di kondisi OFF)
-  Serial.print("[INIT] Menginisialisasi Relay Pompa Air...");
+  // 1. Inisialisasi Relay Pompa Air & Self-Test Klik Fisik (3x Klik)
+  Serial.println("[INIT] Menginisialisasi Relay Pompa Air & Uji Klik 3x...");
   pump.begin();
-  Serial.println(" [OK]");
+  for (int i = 1; i <= 3; i++) {
+    Serial.printf("  -> [TES KLIK %d/3] RELAY ON  (KLIK!)\n", i);
+    digitalWrite(PIN_STATUS_LED, HIGH);
+    pump.start(2, true);
+    delay(700);
+    Serial.printf("  -> [TES KLIK %d/3] RELAY OFF (KLIK!)\n", i);
+    digitalWrite(PIN_STATUS_LED, LOW);
+    pump.stop();
+    delay(700);
+  }
+  Serial.println("[INIT] Uji Relay Selesai [OK]");
 
   // 2. Inisialisasi Sensor Kelembaban Tanah (ADC 12-bit & Atenuasi)
   Serial.print("[INIT] Menginisialisasi Sensor Kapasitif...");
@@ -180,14 +190,9 @@ void loop() {
     );
 
     // Eksekusi instruksi kontrol jika diterima dari Cloudflare / Firebase
-    if (response.success) {
-      if (response.shouldRunPump && !pump.isActive()) {
-        Serial.printf("[KONTROL] Menerima perintah RUN_PUMP dari Cloud (%d detik).\n", response.pumpDurationSec);
-        pump.start(response.pumpDurationSec);
-      } else if (!response.shouldRunPump && pump.isActive()) {
-        Serial.println("[KONTROL] Menerima perintah STOP_PUMP dari Cloud.");
-        pump.stop();
-      }
+    if (response.success && response.shouldRunPump && !pump.isActive()) {
+      Serial.printf("[KONTROL] Menerima perintah RUN_PUMP dari Cloud (%d detik).\n", response.pumpDurationSec);
+      pump.start(response.pumpDurationSec, true);
     }
     Serial.println("--------------------------------------------------------");
   }

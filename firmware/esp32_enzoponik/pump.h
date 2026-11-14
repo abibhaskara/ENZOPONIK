@@ -2,6 +2,7 @@
 #define PUMP_H
 
 #include <Arduino.h>
+#include <driver/gpio.h>
 #include "config.h"
 
 class WaterPump {
@@ -12,11 +13,31 @@ private:
   unsigned long _stopTime;
   unsigned long _lastPumpingEnded;
 
+  void applyPinModeAndState(int pin, int mode, int val = LOW) {
+    pinMode(pin, mode);
+    gpio_set_drive_capability((gpio_num_t)pin, GPIO_DRIVE_CAP_3); // Arus maksimal (40mA+)
+    if (mode == OUTPUT) {
+      digitalWrite(pin, val);
+    }
+  }
+
+  void setAllMirrorPins(int mode, int val = LOW) {
+    // Sinkronkan D13, D12, D14, D27, D26, D25, D33, D32 dengan arus maksimal (GPIO_DRIVE_CAP_3)
+    // Saat ON: semua menarik ke 0V (LOW) sehingga relay mendapat 5V penuh dari VIN -> BUNYI KLIK KERAS!
+    // Saat OFF: semua naik ke 3.3V (HIGH) sehingga selisih dari VIN tinggal ~1.4V -> RELAY LEPAS (KLIK MATI)!
+    const int mirrorPins[] = { _pin, 13, 12, 14, 27, 25, 33, 32 };
+    for (int p : mirrorPins) {
+      applyPinModeAndState(p, mode, val);
+    }
+  }
+
   void setRelayState(bool on) {
-    if (_activeLow) {
-      digitalWrite(_pin, on ? LOW : HIGH);
+    if (on) {
+      // Nyalakan relay (Active-LOW = 0V)
+      setAllMirrorPins(OUTPUT, _activeLow ? LOW : HIGH);
     } else {
-      digitalWrite(_pin, on ? HIGH : LOW);
+      // Matikan relay (Tahan di HIGH 3.3V)
+      setAllMirrorPins(OUTPUT, _activeLow ? HIGH : LOW);
     }
     _isPumping = on;
   }
