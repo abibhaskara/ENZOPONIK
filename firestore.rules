@@ -1,0 +1,491 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    //
+    // Collection: users/{userId}
+    // Document ID: Firebase Auth UID or local/fallback identifier ('ezpn_usr_*', 'guest_*', 'offline_user', 'default_farmer')
+    // Fields:
+    //   - uid: string (optional on partial merge; must equal userId if present; immutable)
+    //   - displayName: string (optional/nullable, max 100 chars)
+    //   - email: string (optional/nullable, max 254 chars)
+    //   - photoURL: string (optional/nullable, valid http/https URL or empty, max 2048 chars)
+    //   - passwordHash: string (optional/nullable, max 128 chars - fallback email auth hash)
+    //   - subscriptionTier: string (optional, 'free' | 'pro')
+    //   - activeDeviceId: string (optional/nullable, max 64 chars)
+    //   - cropProfile: map | null (optional; keys: cropName [required, 1..100], variety [0..100], growthStage [0..50], plantedAt [timestamp | string <= 64], cycleDays [0..3650], irrigationMethod [0..64], useCustomThresholds [bool], optimalMoisture [0..100], optimalTemp [-50..100], optimalHumidity [0..100], scientificName [0..120], climateAdaptation [0..100], harvestType ['sekali_panen' | 'panen_berkala' | null], minHst [1..3650], maxHst [1..3650], pumpOnThreshold [50..80], pumpOffThreshold [50..80], criticalDryAlert [20..70], overwaterAlert [75..95], tempIdealMin [0..50], tempIdealMax [0..50], tempMaxTolerance [0..60], substrateMix [0..300], towerPlacement [0..300], technicalNote [0..500])
+    //   - locationConfig: map | null (optional; keys: isLocked, latitude, longitude)
+    //   - notificationsEnabled: bool (optional)
+    //   - autoIrrigation: bool (optional)
+    //   - aiQuota: map | null (optional; keys: date, used, lastUsedAt, lastFeature)
+    //   - createdAt: timestamp (optional; immutable once set)
+    //   - lastLoginAt: timestamp (optional)
+    //   - updatedAt: timestamp (optional)
+    //
+    // Collection: devices/{deviceId}
+    // Document ID: Physical hardware identifier (e.g., 'EZPN-742KXMPT', 'ENZOPONIK-01')
+    // Fields:
+    //   - deviceId: string (optional, max 64 chars)
+    //   - ownerUid: string (optional, max 128 chars; immutable once claimed by an owner)
+    //   - name: string (optional, max 100 chars)
+    //   - status: string (optional, 'online' | 'offline')
+    //   - claimedAt: timestamp (optional)
+    //   - lastSeen: timestamp (optional)
+    //   - liveTelemetry: map | null (optional; validated telemetry payload from Worker ingestion)
+    //   - control: map | null (optional; per-device remote actuator controls & calibrated cocopeat pump hysteresis: pumpActive, flushActive, autoMode, manualTrigger, pumpDurationSec [0..3600], updatedAt [timestamp | string <= 64 chars], pumpOnThreshold [50..80], pumpOffThreshold [50..80], criticalDryAlert [20..70], overwaterAlert [75..95], cropName [0..100])
+    //
+    // Subcollection: devices/{deviceId}/daily_snapshots/{snapshotId}
+    // Document ID: Snapshot date string (YYYY-MM-DD)
+    // Fields:
+    //   - date: string (required, YYYY-MM-DD)
+    //   - avgTemp: number (required, -50..100)
+    //   - avgHumidity: number (required, 0..100)
+    //   - avgMoisture: number (required, 0..100)
+    //   - healthScore: number (required, 0..100)
+    //   - tier: string (required, 'free' | 'pro')
+    //   - expireAt: timestamp (optional, native TTL expiration)
+    //   - createdAt: timestamp (optional)
+    //   - soilMoisture / avgUv / uvIndex: number (optional legacy/chart aliases)
+    //
+    // Collection: telemetry_history/{document=**}
+    // Append-only historical time-series sensor readings
+    // Fields (validated by isValidTelemetryPayload + required timestamp):
+    //   - deviceId / node_id: string | null (optional, 1..64 chars)
+    //   - soilMoisture: number | null (optional, 0..100)
+    //   - temperature: number | null (optional, -50..100)
+    //   - humidity: number | null (optional, 0..100)
+    //   - lightLevel: number | null (optional, 0..200000)
+    //   - uvIndex: number | null (optional, 0..25)
+    //   - windSpeed: number | null (optional, 0..300)
+    //   - rainfall: number | null (optional, 0..1000)
+    //   - rawAdc: number | null (optional, 0..65535)
+    //   - uptime / uptimeSec: number | null (optional, 0..315360000)
+    //   - rssi: number | null (optional, -150..0)
+    //   - firmwareVersion: string | null (optional, 1..32 chars)
+    //   - pumpActive: bool | null (optional)
+    //   - pumpDurationSec: number | null (optional, 0..86400)
+    //   - lastHeartbeatAt / updatedAt / controlUpdatedAt: timestamp | string | null (optional, string <= 64 chars)
+    //   - timestamp: timestamp (required)
+    //
+    // Collection: alerts/{alertId}
+    // System, irrigation, and crop warnings/alerts
+    // Fields:
+    //   - deviceId: string | null (optional, max 64 chars)
+    //   - userId: string | null (optional, max 128 chars)
+    //   - title: string (required, 1..200 chars)
+    //   - desc: string | null (optional, max 500 chars)
+    //   - type: string (required on create, 'info' | 'warning' | 'danger' | 'error' | 'success')
+    //   - type_key: string | null (optional, max 64 chars)
+    //   - zone: string | null (optional, max 64 chars)
+    //   - read: bool (required)
+    //   - timestamp: timestamp | string (required)
+    //
+    // ===============================================================
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isLocalFallbackUserId(userId) {
+      return userId is string && (
+        userId.matches('^(ezpn_usr_|guest_)[a-zA-Z0-9_-]{1,64}$') ||
+        userId in ['offline_user', 'default_farmer']
+      );
+    }
+
+    function canAccessUserDoc(userId) {
+      return isOwner(userId) || (!isAuthenticated() && isLocalFallbackUserId(userId));
+    }
+
+    function hasOnlyAllowedFields(fields) {
+      return request.resource.data.keys().hasOnly(fields);
+    }
+
+    function hasRequiredFields(fields) {
+      return request.resource.data.keys().hasAll(fields);
+    }
+
+    function isValidOptionalString(data, field, minLen, maxLen) {
+      return !(field in data) ||
+             data[field] == null ||
+             (data[field] is string &&
+              data[field].size() >= minLen &&
+              data[field].size() <= maxLen);
+    }
+
+    function isValidOptionalNumber(data, field, minVal, maxVal) {
+      return !(field in data) ||
+             data[field] == null ||
+             (data[field] is number &&
+              data[field] >= minVal &&
+              data[field] <= maxVal);
+    }
+
+    function isValidOptionalBool(data, field) {
+      return !(field in data) ||
+             data[field] == null ||
+             data[field] is bool;
+    }
+
+    function isValidOptionalTimestamp(data, field) {
+      return !(field in data) ||
+             data[field] == null ||
+             data[field] is timestamp;
+    }
+
+    function isValidOptionalTimestampOrString(data, field) {
+      return !(field in data) ||
+             data[field] == null ||
+             data[field] is timestamp ||
+             (data[field] is string && data[field].size() <= 64);
+    }
+
+    function isValidUrl(url) {
+      return url is string &&
+             url.size() <= 2048 &&
+             (url.matches('^https://.*') || url.matches('^http://.*'));
+    }
+
+    function areUserImmutableFieldsUnchanged() {
+      return (!('uid' in resource.data) || !('uid' in request.resource.data) || request.resource.data.uid == resource.data.uid) &&
+             (!('createdAt' in resource.data) || request.resource.data.createdAt == resource.data.createdAt);
+    }
+
+    // ===============================================================
+    // Domain Validators
+    // ===============================================================
+
+    function isValidCropProfile(cp) {
+      return cp == null || (
+        cp is map &&
+        cp.keys().hasOnly([
+          'cropName', 'variety', 'growthStage', 'plantedAt',
+          'cycleDays', 'irrigationMethod', 'useCustomThresholds',
+          'optimalMoisture', 'optimalTemp', 'optimalHumidity',
+          'scientificName', 'climateAdaptation', 'harvestType',
+          'minHst', 'maxHst', 'pumpOnThreshold', 'pumpOffThreshold',
+          'criticalDryAlert', 'overwaterAlert', 'tempIdealMin',
+          'tempIdealMax', 'tempMaxTolerance', 'substrateMix',
+          'towerPlacement', 'technicalNote'
+        ]) &&
+        'cropName' in cp &&
+        cp.cropName is string && cp.cropName.size() >= 1 && cp.cropName.size() <= 100 &&
+        isValidOptionalString(cp, 'variety', 0, 100) &&
+        isValidOptionalString(cp, 'growthStage', 0, 50) &&
+        isValidOptionalTimestampOrString(cp, 'plantedAt') &&
+        isValidOptionalNumber(cp, 'cycleDays', 0, 3650) &&
+        isValidOptionalString(cp, 'irrigationMethod', 0, 64) &&
+        isValidOptionalBool(cp, 'useCustomThresholds') &&
+        isValidOptionalNumber(cp, 'optimalMoisture', 0, 100) &&
+        isValidOptionalNumber(cp, 'optimalTemp', -50, 100) &&
+        isValidOptionalNumber(cp, 'optimalHumidity', 0, 100) &&
+        isValidOptionalString(cp, 'scientificName', 0, 120) &&
+        isValidOptionalString(cp, 'climateAdaptation', 0, 100) &&
+        (!('harvestType' in cp) || cp.harvestType == null ||
+         (cp.harvestType is string && cp.harvestType in ['sekali_panen', 'panen_berkala'])) &&
+        isValidOptionalNumber(cp, 'minHst', 1, 3650) &&
+        isValidOptionalNumber(cp, 'maxHst', 1, 3650) &&
+        isValidOptionalNumber(cp, 'pumpOnThreshold', 50, 80) &&
+        isValidOptionalNumber(cp, 'pumpOffThreshold', 50, 80) &&
+        isValidOptionalNumber(cp, 'criticalDryAlert', 20, 70) &&
+        isValidOptionalNumber(cp, 'overwaterAlert', 75, 95) &&
+        isValidOptionalNumber(cp, 'tempIdealMin', 0, 50) &&
+        isValidOptionalNumber(cp, 'tempIdealMax', 0, 50) &&
+        isValidOptionalNumber(cp, 'tempMaxTolerance', 0, 60) &&
+        isValidOptionalString(cp, 'substrateMix', 0, 300) &&
+        isValidOptionalString(cp, 'towerPlacement', 0, 300) &&
+        isValidOptionalString(cp, 'technicalNote', 0, 500)
+      );
+    }
+
+    function isValidLocationConfig(loc) {
+      return loc == null || (
+        loc is map &&
+        loc.keys().hasOnly(['isLocked', 'latitude', 'longitude']) &&
+        isValidOptionalBool(loc, 'isLocked') &&
+        isValidOptionalNumber(loc, 'latitude', -90, 90) &&
+        isValidOptionalNumber(loc, 'longitude', -180, 180)
+      );
+    }
+
+    function isValidAiQuota(q) {
+      return q == null || (
+        q is map &&
+        q.keys().hasOnly(['date', 'used', 'lastUsedAt', 'lastFeature']) &&
+        isValidOptionalString(q, 'date', 0, 20) &&
+        isValidOptionalNumber(q, 'used', 0, 10000) &&
+        isValidOptionalTimestampOrString(q, 'lastUsedAt') &&
+        isValidOptionalString(q, 'lastFeature', 0, 100)
+      );
+    }
+
+    function isValidUser(data, userId) {
+      return data.keys().size() > 0 &&
+             hasOnlyAllowedFields([
+               'uid', 'displayName', 'email', 'photoURL', 'passwordHash',
+               'subscriptionTier', 'activeDeviceId', 'cropProfile', 'locationConfig',
+               'notificationsEnabled', 'autoIrrigation', 'aiQuota',
+               'createdAt', 'lastLoginAt', 'updatedAt'
+             ]) &&
+             (!('uid' in data) || (data.uid is string && data.uid == userId && data.uid.size() <= 128)) &&
+             isValidOptionalString(data, 'displayName', 0, 100) &&
+             isValidOptionalString(data, 'email', 0, 254) &&
+             (!('photoURL' in data) || data.photoURL == null || data.photoURL == '' || isValidUrl(data.photoURL)) &&
+             isValidOptionalString(data, 'passwordHash', 0, 128) &&
+             (!('subscriptionTier' in data) || data.subscriptionTier in ['free', 'pro']) &&
+             isValidOptionalString(data, 'activeDeviceId', 0, 64) &&
+             (!('cropProfile' in data) || isValidCropProfile(data.cropProfile)) &&
+             (!('locationConfig' in data) || isValidLocationConfig(data.locationConfig)) &&
+             isValidOptionalBool(data, 'notificationsEnabled') &&
+             isValidOptionalBool(data, 'autoIrrigation') &&
+             (!('aiQuota' in data) || isValidAiQuota(data.aiQuota)) &&
+             isValidOptionalTimestamp(data, 'createdAt') &&
+             isValidOptionalTimestamp(data, 'lastLoginAt') &&
+             isValidOptionalTimestamp(data, 'updatedAt');
+    }
+
+    function isValidTelemetryPayload(data) {
+      return data.keys().size() > 0 &&
+             data.keys().hasOnly([
+               'deviceId', 'node_id', 'soilMoisture', 'temperature', 'humidity',
+               'lightLevel', 'uvIndex', 'windSpeed', 'rainfall', 'rawAdc',
+               'uptime', 'uptimeSec', 'rssi', 'firmwareVersion',
+               'pumpActive', 'pumpDurationSec',
+               'lastHeartbeatAt', 'timestamp', 'updatedAt', 'controlUpdatedAt'
+             ]) &&
+             isValidOptionalString(data, 'deviceId', 1, 64) &&
+             isValidOptionalString(data, 'node_id', 1, 64) &&
+             isValidOptionalNumber(data, 'soilMoisture', 0, 100) &&
+             isValidOptionalNumber(data, 'temperature', -50, 100) &&
+             isValidOptionalNumber(data, 'humidity', 0, 100) &&
+             isValidOptionalNumber(data, 'lightLevel', 0, 200000) &&
+             isValidOptionalNumber(data, 'uvIndex', 0, 25) &&
+             isValidOptionalNumber(data, 'windSpeed', 0, 300) &&
+             isValidOptionalNumber(data, 'rainfall', 0, 1000) &&
+             isValidOptionalNumber(data, 'rawAdc', 0, 65535) &&
+             isValidOptionalNumber(data, 'uptime', 0, 315360000) &&
+             isValidOptionalNumber(data, 'uptimeSec', 0, 315360000) &&
+             isValidOptionalNumber(data, 'rssi', -150, 0) &&
+             isValidOptionalString(data, 'firmwareVersion', 1, 32) &&
+             isValidOptionalBool(data, 'pumpActive') &&
+             isValidOptionalNumber(data, 'pumpDurationSec', 0, 86400) &&
+             isValidOptionalTimestampOrString(data, 'lastHeartbeatAt') &&
+             isValidOptionalTimestampOrString(data, 'timestamp') &&
+             isValidOptionalTimestampOrString(data, 'updatedAt') &&
+             isValidOptionalTimestampOrString(data, 'controlUpdatedAt');
+    }
+
+    function isValidTelemetryHistory(data) {
+      return isValidTelemetryPayload(data) &&
+             'timestamp' in data &&
+             data.timestamp is timestamp;
+    }
+
+    function isValidDeviceControlMap(ctrl) {
+      return ctrl is map &&
+             ctrl.keys().hasOnly([
+               'pumpActive', 'flushActive', 'autoMode',
+               'manualTrigger', 'pumpDurationSec', 'updatedAt',
+               'pumpOnThreshold', 'pumpOffThreshold',
+               'criticalDryAlert', 'overwaterAlert', 'cropName'
+             ]) &&
+             isValidOptionalBool(ctrl, 'pumpActive') &&
+             isValidOptionalBool(ctrl, 'flushActive') &&
+             isValidOptionalBool(ctrl, 'autoMode') &&
+             isValidOptionalBool(ctrl, 'manualTrigger') &&
+             isValidOptionalNumber(ctrl, 'pumpDurationSec', 0, 3600) &&
+             isValidOptionalTimestampOrString(ctrl, 'updatedAt') &&
+             isValidOptionalNumber(ctrl, 'pumpOnThreshold', 50, 80) &&
+             isValidOptionalNumber(ctrl, 'pumpOffThreshold', 50, 80) &&
+             isValidOptionalNumber(ctrl, 'criticalDryAlert', 20, 70) &&
+             isValidOptionalNumber(ctrl, 'overwaterAlert', 75, 95) &&
+             isValidOptionalString(ctrl, 'cropName', 0, 100);
+    }
+
+    function isValidDevice(data) {
+      return data.keys().size() > 0 &&
+             hasOnlyAllowedFields([
+               'deviceId', 'ownerUid', 'name', 'status',
+               'claimedAt', 'lastSeen', 'liveTelemetry', 'control'
+             ]) &&
+             isValidOptionalString(data, 'deviceId', 1, 64) &&
+             isValidOptionalString(data, 'ownerUid', 1, 128) &&
+             isValidOptionalString(data, 'name', 0, 100) &&
+             (!('status' in data) || data.status in ['online', 'offline']) &&
+             isValidOptionalTimestamp(data, 'claimedAt') &&
+             isValidOptionalTimestamp(data, 'lastSeen') &&
+             (!('liveTelemetry' in data) || data.liveTelemetry == null ||
+              (data.liveTelemetry is map && isValidTelemetryPayload(data.liveTelemetry))) &&
+             (!('control' in data) || data.control == null || isValidDeviceControlMap(data.control));
+    }
+
+    function isOwnerUidUnchanged() {
+      return (!('ownerUid' in resource.data) && !('ownerUid' in request.resource.data)) ||
+             ('ownerUid' in resource.data &&
+              'ownerUid' in request.resource.data &&
+              request.resource.data.ownerUid == resource.data.ownerUid);
+    }
+
+    function isWorkerHeartbeatCreate() {
+      return !isAuthenticated() &&
+             hasOnlyAllowedFields(['lastSeen', 'status', 'liveTelemetry']) &&
+             'liveTelemetry' in request.resource.data &&
+             request.resource.data.liveTelemetry is map;
+    }
+
+    function isWorkerHeartbeatUpdate() {
+      return !isAuthenticated() &&
+             request.resource.data.diff(resource.data).affectedKeys().hasOnly(['lastSeen', 'status', 'liveTelemetry', 'control']) &&
+             isOwnerUidUnchanged() &&
+             'liveTelemetry' in request.resource.data &&
+             request.resource.data.liveTelemetry is map;
+    }
+
+    function isWorkerControlUpdate() {
+      return !isAuthenticated() &&
+             request.resource.data.diff(resource.data).affectedKeys().hasOnly(['control']) &&
+             isOwnerUidUnchanged() &&
+             'control' in request.resource.data &&
+             isValidDeviceControlMap(request.resource.data.control);
+    }
+
+    function canWriteDeviceOnCreate() {
+      return isValidDevice(request.resource.data) && (
+        (isAuthenticated() && (!('ownerUid' in request.resource.data) || request.resource.data.ownerUid == request.auth.uid)) ||
+        isWorkerHeartbeatCreate() ||
+        (!isAuthenticated() && 'ownerUid' in request.resource.data && isLocalFallbackUserId(request.resource.data.ownerUid))
+      );
+    }
+
+    function canWriteDeviceOnUpdate() {
+      return isValidDevice(request.resource.data) && (
+        (isAuthenticated() &&
+         (!('ownerUid' in resource.data) || resource.data.ownerUid == request.auth.uid) &&
+         (!('ownerUid' in request.resource.data) || request.resource.data.ownerUid == request.auth.uid)) ||
+        isWorkerHeartbeatUpdate() ||
+        isWorkerControlUpdate() ||
+        (!isAuthenticated() &&
+         (!('ownerUid' in resource.data) || isLocalFallbackUserId(resource.data.ownerUid)) &&
+         'ownerUid' in request.resource.data &&
+         isLocalFallbackUserId(request.resource.data.ownerUid) &&
+         (!('ownerUid' in resource.data) || request.resource.data.ownerUid == resource.data.ownerUid))
+      );
+    }
+
+    function canDeleteDevice() {
+      return (isAuthenticated() && (!('ownerUid' in resource.data) || resource.data.ownerUid == request.auth.uid)) ||
+             (!isAuthenticated() && 'ownerUid' in resource.data && isLocalFallbackUserId(resource.data.ownerUid));
+    }
+
+    function isValidDailySnapshot(data) {
+      return hasOnlyAllowedFields([
+               'date', 'avgTemp', 'avgHumidity', 'avgMoisture', 'healthScore',
+               'tier', 'expireAt', 'createdAt', 'soilMoisture', 'avgUv', 'uvIndex'
+             ]) &&
+             hasRequiredFields(['date', 'avgTemp', 'avgHumidity', 'avgMoisture', 'healthScore', 'tier']) &&
+             data.date is string && data.date.matches('^\\d{4}-\\d{2}-\\d{2}$') &&
+             data.avgTemp is number && data.avgTemp >= -50 && data.avgTemp <= 100 &&
+             data.avgHumidity is number && data.avgHumidity >= 0 && data.avgHumidity <= 100 &&
+             data.avgMoisture is number && data.avgMoisture >= 0 && data.avgMoisture <= 100 &&
+             data.healthScore is number && data.healthScore >= 0 && data.healthScore <= 100 &&
+             data.tier in ['free', 'pro'] &&
+             isValidOptionalTimestamp(data, 'expireAt') &&
+             isValidOptionalTimestamp(data, 'createdAt') &&
+             isValidOptionalNumber(data, 'soilMoisture', 0, 100) &&
+             isValidOptionalNumber(data, 'avgUv', 0, 25) &&
+             isValidOptionalNumber(data, 'uvIndex', 0, 25);
+    }
+
+    function canWriteDailySnapshot(deviceId) {
+      let parentPath = /databases/$(database)/documents/devices/$(deviceId);
+      return !exists(parentPath) ||
+             !('ownerUid' in get(parentPath).data) ||
+             (isAuthenticated() && get(parentPath).data.ownerUid == request.auth.uid) ||
+             (!isAuthenticated() && isLocalFallbackUserId(get(parentPath).data.ownerUid));
+    }
+
+    function isValidAlert(data) {
+      return hasOnlyAllowedFields([
+               'deviceId', 'userId', 'title', 'desc', 'type',
+               'type_key', 'zone', 'read', 'timestamp'
+             ]) &&
+             hasRequiredFields(['title', 'read', 'timestamp']) &&
+             isValidOptionalString(data, 'deviceId', 1, 64) &&
+             isValidOptionalString(data, 'userId', 1, 128) &&
+             data.title is string && data.title.size() >= 1 && data.title.size() <= 200 &&
+             isValidOptionalString(data, 'desc', 0, 500) &&
+             (!('type' in data) || data.type in ['info', 'warning', 'danger', 'error', 'success']) &&
+             isValidOptionalString(data, 'type_key', 1, 64) &&
+             isValidOptionalString(data, 'zone', 1, 64) &&
+             data.read is bool &&
+             (data.timestamp is timestamp || (data.timestamp is string && data.timestamp.size() <= 64));
+    }
+
+    // ===============================================================
+    // Collection Rules
+    // ===============================================================
+
+    // 1. User profiles (includes embedded cropProfile, locationConfig, aiQuota)
+    // Authenticated Firebase users can only access their own doc; unauthenticated access is strictly scoped to local/fallback UIDs and list is disabled.
+    match /users/{userId} {
+      allow get: if canAccessUserDoc(userId);
+      allow list: if false;
+      allow create: if canAccessUserDoc(userId) && isValidUser(request.resource.data, userId);
+      allow update: if canAccessUserDoc(userId) && isValidUser(request.resource.data, userId) && areUserImmutableFieldsUnchanged();
+      allow delete: if isOwner(userId);
+    }
+
+    // 2. IoT hardware devices & daily snapshots
+    // Read remains compatible with Worker lookups, pre-claim lock checks, and fallback owner queries; writes validate schema and protect claimed ownership.
+    match /devices/{deviceId} {
+      allow read: if true;
+      allow create: if deviceId.size() >= 1 && deviceId.size() <= 64 && canWriteDeviceOnCreate();
+      allow update: if deviceId.size() >= 1 && deviceId.size() <= 64 && canWriteDeviceOnUpdate();
+      allow delete: if deviceId.size() >= 1 && deviceId.size() <= 64 && canDeleteDevice();
+
+      // Subcollection for daily aggregated crop snapshots
+      match /daily_snapshots/{snapshotId} {
+        allow read: if true;
+        allow create, update: if snapshotId.matches('^\\d{4}-\\d{2}-\\d{2}$') &&
+                                canWriteDailySnapshot(deviceId) &&
+                                isValidDailySnapshot(request.resource.data);
+        allow delete: if isAuthenticated() && canWriteDailySnapshot(deviceId);
+      }
+    }
+
+    // 3. Historical time-series sensor readings (append-only)
+    match /telemetry_history/{document=**} {
+      allow read: if true;
+      allow create: if isValidTelemetryHistory(request.resource.data);
+      allow update, delete: if false;
+    }
+
+    // 4. System and crop warnings/alerts
+    match /alerts/{alertId} {
+      allow read: if true;
+      allow create: if alertId.size() >= 1 && alertId.size() <= 128 &&
+                      'type' in request.resource.data &&
+                      isValidAlert(request.resource.data);
+      allow update: if alertId.size() >= 1 && alertId.size() <= 128 &&
+                      isValidAlert(request.resource.data) &&
+                      request.resource.data.diff(resource.data).affectedKeys().hasOnly(['read']);
+      allow delete: if false;
+    }
+
+    // Default deny for all other paths (including obsolete user_profiles/{userId}, device_controls/{controlId}, and telemetry/{document=**})
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

@@ -1,0 +1,159 @@
+#ifndef EZPN_NETWORK_H
+#define EZPN_NETWORK_H
+
+#include <Arduino.h>
+#include <WiFi.h>
+#include <WiFiClientSecure.h>
+#include <HTTPClient.h>
+#include "config.h"
+
+struct CloudResponse {
+  bool success;
+  bool shouldRunPump;
+  bool isManual;
+  int pumpDurationSec;
+  String command;
+};
+
+class EzpnNetwork {
+private:
+  unsigned long _lastWifiCheck;
+  WiFiClientSecure _client;
+  HTTPClient _https;
+  bool _httpsInitialized;
+
+public:
+  EzpnNetwork() : _lastWifiCheck(0), _httpsInitialized(false) {
+    _client.setInsecure();
+    _https.setReuse(true);
+  }
+
+  void connectWiFi() {
+    Serial.println();
+    Serial.print("[WiFi] Menghubungkan ke: ");
+    Serial.println(WIFI_SSID);
+
+    WiFi.mode(WIFI_STA);
+    WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+
+    unsigned long startAttempt = millis();
+    while (WiFi.status() != WL_CONNECTED && millis() - startAttempt < WIFI_CONNECT_TIMEOUT) {
+      delay(500);
+      Serial.print(".");
+
+      digitalWrite(PIN_STATUS_LED, !digitalRead(PIN_STATUS_LED));
+    }
+    Serial.println();
+
+    if (WiFi.status() == WL_CONNECTED) {
+      Serial.print("[WiFi] Sukses terhubung! IP ESP32: ");
+      Serial.println(WiFi.localIP());
+      Serial.printf("[WiFi] Kekuatan Sinyal (RSSI): %d dBm\n", WiFi.RSSI());
+      digitalWrite(PIN_STATUS_LED, HIGH);
+    } else {
+      Serial.println("[WiFi] GAGAL terhubung. Masuk ke mode offline darurat.");
+      digitalWrite(PIN_STATUS_LED, LOW);
+    }
+  }
+
+  bool isConnected() {
+    return WiFi.status() == WL_CONNECTED;
+  }
+
+  void checkAndReconnect() {
+    if (millis() - _lastWifiCheck > 10000) {
+      _lastWifiCheck = millis();
+      if (WiFi.status() != WL_CONNECTED) {
+        Serial.println("[WiFi] Koneksi terputus! Mencoba menghubungkan kembali...");
+        WiFi.disconnect();
+        WiFi.reconnect();
+      }
+    }
+  }
+
+  CloudResponse sendTelemetry(const String& deviceId, int soilMoisture, int rawAdc, bool pumpActive, int uptimeSec) {
+    CloudResponse res;
+    res.success = false;
+    res.shouldRunPump = false;
+    res.isManual = false;
+    res.pumpDurationSec = 0;
+    res.command = "NONE";
+
+    if (WiFi.status() != WL_CONNECTED) {
+      Serial.println("[HTTP] Dibatalkan: Wi-Fi tidak terhubung.");
+      return res;
+    }
+
+    if (!_httpsInitialized) {
+      if (!_https.begin(_client, CLOUDFLARE_WORKER_URL)) {
+        Serial.println("[HTTP] Gagal menginisialisasi client HTTPS.");
+        return res;
+      }
+      _https.setReuse(true);
+      _https.setTimeout(6000);
+      _httpsInitialized = true;
+    }
+
+    _https.addHeader("Content-Type", "application/json");
+
+    String jsonPayload = "{";
+    jsonPayload += "\"deviceId\":\"" + deviceId + "\",";
+    jsonPayload += "\"soilMoisture\":" + String(soilMoisture) + ",";
+    jsonPayload += "\"rawAdc\":" + String(rawAdc) + ",";
+    jsonPayload += "\"pumpActive\":" + String(pumpActive ? "true" : "false") + ",";
+    jsonPayload += "\"firmwareVersion\":\"" + String(FIRMWARE_VERSION) + "\",";
+    jsonPayload += "\"rssi\":" + String(WiFi.RSSI()) + ",";
+    jsonPayload += "\"uptimeSec\":" + String(uptimeSec);
+    jsonPayload += "}";
+
+    unsigned long reqStart = millis();
+    int httpCode = _https.POST(jsonPayload);
+    unsigned long latency = millis() - reqStart;
+
+    if (httpCode == HTTP_CODE_OK || httpCode == 201) {
+      String responseBody = _https.getString();
+      Serial.printf("[HTTP 200] Cloudflare merespons (%lums):\n", latency);
+      Serial.println(responseBody);
+
+      res.success = true;
+
+      res.isManual =
+        responseBody.indexOf("\"manual\": true") >= 0 ||
+        responseBody.indexOf("\"manual\":true") >= 0;
+
+      if (responseBody.indexOf("RUN_PUMP") >= 0 ||
+          responseBody.indexOf("\"pumpActive\": true") >= 0 ||
+          responseBody.indexOf("\"pumpActive\":true") >= 0) {
+        res.shouldRunPump = true;
+        res.command = "RUN_PUMP";
+
+        int durIdx = responseBody.indexOf("\"pumpDurationSec\"");
+        if (durIdx >= 0) {
+          int colonIdx = responseBody.indexOf(":", durIdx);
+          if (colonIdx > 0) {
+            int endIdx = responseBody.indexOf(",", colonIdx);
+            if (endIdx < 0) endIdx = responseBody.indexOf("}", colonIdx);
+            if (endIdx > colonIdx) {
+              String numStr = responseBody.substring(colonIdx + 1, endIdx);
+              numStr.trim();
+              res.pumpDurationSec = numStr.toInt();
+            }
+          }
+        }
+        if (res.pumpDurationSec <= 0) res.pumpDurationSec = 10;
+      } else {
+        res.shouldRunPump = false;
+        res.command = "STOP_PUMP";
+      }
+    } else {
+      Serial.printf("[HTTP ERROR] Kode: %d | Latency: %lums\n", httpCode, latency);
+      _https.end();
+      _httpsInitialized = false;
+    }
+
+    return res;
+  }
+};
+
+#endif
+

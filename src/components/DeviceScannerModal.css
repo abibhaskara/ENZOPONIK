@@ -1,0 +1,375 @@
+.qr-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background-color: rgba(15, 23, 42, 0.48);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--gutter, 20px);
+  animation: qrFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.qr-modal-card {
+  width: 100%;
+  max-width: var(--max-width, 430px);
+  max-height: calc(100dvh - 40px);
+  background-color: var(--surface, #ffffff);
+  border: 1px solid var(--border-surface, #e5e7eb);
+  border-radius: var(--radius-card, 20px);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  animation: qrSlideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes qrFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes qrSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.qr-modal-header {
+  position: relative;
+  padding: 14px var(--card-pad, 16px);
+  border-bottom: 1px solid var(--rule, #f1f5f9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.qr-modal-title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #111827;
+  letter-spacing: -0.015em;
+  text-align: center;
+}
+
+.qr-modal-close {
+  position: absolute;
+  right: var(--card-pad, 16px);
+  top: 50%;
+  transform: translateY(-50%) scale(1);
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  line-height: 0;
+  flex-shrink: 0;
+  background-color: var(--surface, #ffffff);
+  border: 1px solid var(--border-surface, #e5e7eb);
+  border-radius: 50%;
+  color: #6b7280;
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    transform 0.16s cubic-bezier(0.22, 1, 0.36, 1),
+    background-color 0.16s ease,
+    color 0.16s ease,
+    border-color 0.16s ease;
+}
+
+.qr-modal-close svg {
+  transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.qr-modal-close:hover {
+  background-color: var(--ground, #f7f8f9);
+  color: #111827;
+  border-color: #d1d5db;
+  transform: translateY(-50%) scale(1.04);
+}
+
+.qr-modal-close:hover svg {
+  transform: rotate(90deg);
+}
+
+.qr-modal-close:active {
+  transform: translateY(-50%) scale(0.94);
+  background-color: var(--rule, #f1f5f9);
+}
+
+.qr-modal-close:focus-visible {
+  outline: 2px solid var(--accent, #36b37e);
+  outline-offset: 2px;
+}
+
+.qr-scanner-viewfinder-wrap {
+  padding: var(--card-pad, 16px);
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap, 16px);
+}
+
+.qr-scanner-viewfinder {
+  position: relative;
+  width: 100%;
+  height: 270px;
+  background-color: #090d16;
+  border-radius: var(--radius-nested, 14px);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.qr-video-feed {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.qr-reticle {
+  position: absolute;
+  width: 180px;
+  height: 180px;
+  pointer-events: none;
+}
+
+.qr-corner {
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  border: 0 solid var(--accent, #36b37e);
+}
+
+.qr-corner--tl { top: 0; left: 0; border-top-width: 3px; border-left-width: 3px; border-top-left-radius: 8px; }
+.qr-corner--tr { top: 0; right: 0; border-top-width: 3px; border-right-width: 3px; border-top-right-radius: 8px; }
+.qr-corner--bl { bottom: 0; left: 0; border-bottom-width: 3px; border-left-width: 3px; border-bottom-left-radius: 8px; }
+.qr-corner--br { bottom: 0; right: 0; border-bottom-width: 3px; border-right-width: 3px; border-bottom-right-radius: 8px; }
+
+.qr-laser-line {
+  position: absolute;
+  top: 6px;
+  left: 4px;
+  right: 4px;
+  height: 2px;
+  background-color: var(--accent, #36b37e);
+  animation: qrLaserScan 2s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+@keyframes qrLaserScan {
+  0% { transform: translateY(0); opacity: 0.9; }
+  100% { transform: translateY(166px); opacity: 0.9; }
+}
+
+.qr-camera-error {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(15, 23, 42, 0.94);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: var(--card-pad, 16px);
+  text-align: center;
+  color: #f8fafc;
+}
+
+.qr-camera-error__msg {
+  margin: 0;
+  font-size: 0.8rem;
+  line-height: 1.45;
+  color: #cbd5e1;
+}
+
+.qr-btn-retry {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px var(--field-pad-x, 16px);
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #f8fafc;
+  background-color: #334155;
+  border: 1px solid #475569;
+  border-radius: 9999px;
+  cursor: pointer;
+  margin-top: 4px;
+  transition: background 0.15s ease;
+}
+
+.qr-btn-retry:hover {
+  background-color: #475569;
+}
+
+.qr-status-overlay {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(15, 23, 42, 0.9);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  color: #ffffff;
+  padding: var(--card-pad, 16px);
+  text-align: center;
+}
+
+.qr-spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid rgba(255, 255, 255, 0.2);
+  border-top-color: var(--accent, #36b37e);
+  border-radius: 50%;
+  animation: qrSpin 0.7s linear infinite;
+}
+
+@keyframes qrSpin {
+  to { transform: rotate(360deg); }
+}
+
+.qr-status-text {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #f8fafc;
+}
+
+.qr-status-text--success {
+  color: var(--accent, #36b37e);
+  font-size: 0.92rem;
+}
+
+.qr-alert-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px var(--card-pad, 16px);
+  border-radius: var(--radius-nested, 14px);
+  font-size: 0.78rem;
+  line-height: 1.4;
+}
+
+.qr-alert-box--error {
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #991b1b;
+}
+
+.qr-actions-row {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+
+.qr-action-btn {
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px var(--field-pad-x, 16px);
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: #111827;
+  background-color: var(--ground, #f7f8f9);
+  border: 1px solid var(--border-surface, #e5e7eb);
+  border-radius: 9999px;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.qr-action-btn:hover {
+  background-color: var(--rule, #f1f5f9);
+  border-color: #d1d5db;
+}
+
+.qr-manual-form {
+  padding: var(--card-pad, 16px);
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap, 16px);
+}
+
+.qr-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.qr-form-label {
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: #4b5563;
+}
+
+.qr-form-input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px var(--field-pad-x, 16px);
+  font-size: 0.85rem;
+  border: 1px solid var(--border-surface, #e5e7eb);
+  border-radius: var(--radius-nested, 14px);
+  background-color: var(--surface, #ffffff);
+  color: #111827;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+.qr-form-input:focus {
+  border-color: var(--accent, #36b37e);
+}
+
+.qr-manual-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 2px;
+}
+
+.qr-btn-primary {
+  flex: 1;
+  padding: 12px var(--field-pad-x, 16px);
+  background-color: var(--accent, #36b37e);
+  color: #ffffff;
+  font-size: 0.84rem;
+  font-weight: 700;
+  border: none;
+  border-radius: 9999px;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.qr-btn-primary:hover:not(:disabled) {
+  background-color: var(--accent-hover, #2ea06f);
+}
+
+.qr-btn-primary:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.qr-btn-cancel {
+  padding: 12px var(--field-pad-x, 16px);
+  background-color: var(--ground, #f7f8f9);
+  color: #4b5563;
+  font-size: 0.84rem;
+  font-weight: 600;
+  border: 1px solid var(--border-surface, #e5e7eb);
+  border-radius: 9999px;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.qr-btn-cancel:hover {
+  background-color: var(--rule, #f1f5f9);
+  color: #111827;
+}

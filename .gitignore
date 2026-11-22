@@ -1,0 +1,33 @@
+# Dependencies
+node_modules/
+
+# Build & caches
+dist/
+.wrangler/
+.cache/
+.npm/
+.eslintcache
+*.tsbuildinfo
+
+# Environment secrets
+.env
+.env.local
+.env.*.local
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# Editor & OS
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+*.sw?
+
+# Local scratch & internal tools
+scratch/
+.taste-skill/
+firmware/qr_*.png
+firmware/qr_*.svg

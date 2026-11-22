@@ -1,0 +1,27 @@
+.splash {
+  position: fixed;
+  inset: -60px 0;
+  padding: 60px 0;
+  z-index: 2147483647;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  touch-action: none;
+  transition: opacity 0.45s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.splash--fading {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Fixed square stage keeps WebGL canvas dimensions immune to iOS toolbar viewport shifts */
+.splash__glass-canvas {
+  width: min(420px, 100vw);
+  height: min(420px, 100vw);
+  max-width: 100%;
+  max-height: 100%;
+  flex-shrink: 0;
+}
+
